@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Re-Tech - E-Waste Marketplace</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .hero-section {
+            background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('https://images.pexels.com/photos/7750766/pexels-photo-7750766.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1');
+            background-size: cover;
+            background-position: center;
+        }
+        .page {
+            display: none;
+        }
+        .page.active {
+            display: block;
+        }
+        /* Custom green color */
+        .text-eco-green { color: #22c55e; }
+        .bg-eco-green { background-color: #22c55e; }
+        .hover\:bg-eco-green-dark:hover { background-color: #16a34a; }
+        .border-eco-green { border-color: #22c55e; }
+        .ring-eco-green:focus { ring-color: #22c55e; }
+
+        .faq-answer {
+            display: none;
+            transition: max-height 0.3s ease-in-out;
+            max-height: 0;
+            overflow: hidden;
+        }
+        .faq-item.active .faq-answer {
+            display: block;
+            max-height: 200px; /* Adjust as needed */
+        }
+        .faq-item.active .faq-icon {
+            transform: rotate(180deg);
+        }
+        
+        /* Modal Styles */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.6);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .modal-container {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 0.5rem;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+    <header class="bg-white/80 backdrop-blur-md sticky top-0 z-50 border-b border-gray-200">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <svg class="h-8 w-8 text-eco-green"  fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                </svg>
+                <h1 class="text-2xl font-bold text-gray-900">Re-Tech</h1>
+            </div>
+            <nav class="hidden md:flex items-center space-x-8">
+                <a href="#home" class="nav-link text-gray-600 hover:text-eco-green transition-colors">Home</a>
+                <a href="#products" class="nav-link text-gray-600 hover:text-eco-green transition-colors">Products</a>
+                <a href="#sell" class="nav-link text-gray-600 hover:text-eco-green transition-colors">Sell</a>
+                <a href="#articles" class="nav-link text-gray-600 hover:text-eco-green transition-colors">Knowledge</a>
+                <a href="#community" class="nav-link text-gray-600 hover:text-eco-green transition-colors">Community</a>
+            </nav>
+            <div class="flex items-center space-x-4">
+                <a href="#" class="hidden sm:inline-block text-gray-600 hover:text-eco-green transition-colors">Join</a>
+                <a href="#products" class="nav-link bg-eco-green text-white px-5 py-2 rounded-full hover:bg-eco-green-dark transition-all duration-300 shadow-md">Shop</a>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div id="home" class="page active">
+            <section class="hero-section text-center py-24 md:py-40 text-white">
+                <div class="container mx-auto px-6">
+                    <h2 class="text-4xl md:text-6xl font-bold leading-tight mb-4">Welcome to Your Electronic Exchange Community</h2>
+                    <p class="text-lg md:text-xl text-gray-200 max-w-3xl mx-auto mb-8">Join us where buying, selling, and upcycling electronics is easy and rewarding. Connect with like-minded individuals and reduce e-waste today!</p>
+                    <div class="flex justify-center space-x-4">
+                        <a href="#products" class="nav-link bg-eco-green text-white px-8 py-3 rounded-full font-semibold hover:bg-eco-green-dark transition-all duration-300 shadow-lg transform hover:scale-105">Buy Electronics</a>
+                        <a href="#sell" class="nav-link bg-white text-gray-800 px-8 py-3 rounded-full font-semibold hover:bg-gray-200 transition-all duration-300 shadow-lg transform hover:scale-105">Sell Electronics</a>
+                    </div>
+                </div>
+            </section>
+            <section class="py-20 md:py-24 bg-white">
+                <div class="container mx-auto px-6">
+                    <div class="flex flex-col md:flex-row items-center justify-between gap-12 md:gap-16">
+                        <div class="md:w-1/2">
+                            <p class="text-eco-green font-semibold mb-2">DISCOVER</p>
+                            <h3 class="text-3xl md:text-4xl font-bold text-gray-900 mb-6">Find Your Next Electronic Device Today</h3>
+                            <p class="text-gray-600 mb-8">Explore a wide range of electronic products tailored to your needs. Our platform connects buyers with quality devices at competitive prices.</p>
+                             <div class="flex items-center space-x-4">
+                                 <a href="#products" class="nav-link bg-eco-green text-white px-6 py-3 rounded-full hover:bg-eco-green-dark transition-all duration-300 shadow-md">Shop Now</a>
+                                 <a href="#community" class="nav-link text-eco-green font-semibold hover:underline">Learn More &gt;</a>
+                             </div>
+                        </div>
+                        <div class="md:w-1/2">
+                            <div class="bg-gray-100 rounded-lg">
+                                <img src="https://images.pexels.com/photos/8534320/pexels-photo-8534320.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" alt="A plant growing from a smartphone held in hands" class="rounded-lg shadow-xl object-cover">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <div id="products" class="page">
+             <div class="container mx-auto px-6 py-12">
+                <h2 class="text-3xl font-bold text-gray-900 mb-8 text-center">Browse Products</h2>
+                <div class="bg-white p-6 rounded-lg mb-8 shadow-md flex flex-wrap gap-4 items-center justify-center">
+                    <div class="flex-grow min-w-[150px]"><label for="device-type" class="block text-sm font-medium text-gray-700">Device Type</label><select id="device-type" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-eco-green focus:border-eco-green sm:text-sm rounded-md"><option>All</option><option>Smartphone</option><option>Laptop</option><option>Tablet</option><option>Headphones</option><option>Camera</option></select></div>
+                    <div class="flex-grow min-w-[200px]"><label for="price-range" class="block text-sm font-medium text-gray-700">Price Range ($)</label><input type="range" id="price-range" min="0" max="2000" value="2000" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer range-thumb-eco-green"><div class="text-sm text-gray-500 text-right">Up to $<span id="price-value">2000</span></div></div>
+                    <div class="flex-grow min-w-[200px]"><label for="distance-range" class="block text-sm font-medium text-gray-700">Distance (km)</label><input type="range" id="distance-range" min="0" max="500" value="500" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"><div class="text-sm text-gray-500 text-right">Up to <span id="distance-value">500</span> km</div></div>
+                    <div class="flex-grow min-w-[150px]"><label for="sort-by" class="block text-sm font-medium text-gray-700">Sort By</label><select id="sort-by" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-eco-green focus:border-eco-green sm:text-sm rounded-md"><option value="price-asc">Price: Low to High</option><option value="price-desc">Price: High to Low</option><option value="distance-asc">Distance: Closest</option></select></div>
+                </div>
+                <div id="product-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8"></div>
+            </div>
+        </div>
+        
+        <div id="delivery" class="page">
+            <div class="container mx-auto px-6 py-12">
+                 <div class="max-w-4xl mx-auto">
+                    <h2 class="text-3xl font-bold text-gray-900 mb-2 text-center">Choose Your Delivery Method</h2>
+                    <p class="text-center text-gray-600 mb-10">Select a secure and convenient option to receive your item.</p>
+                    
+                    <div class="grid md:grid-cols-2 gap-8">
+                        <div class="bg-white p-8 rounded-lg shadow-md border-2 border-transparent hover:border-eco-green transition-all">
+                            <div class="flex items-center mb-4">
+                                <i class="fas fa-truck text-3xl text-eco-green mr-4"></i>
+                                <h3 class="text-2xl font-bold text-gray-800">Courier Delivery</h3>
+                            </div>
+                            <p class="text-gray-600 mb-6">Have the item shipped directly to your address. Secure, tracked, and insured shipping.</p>
+                            <form>
+                                <div class="mb-4">
+                                    <label for="address" class="block text-sm font-medium text-gray-700">Shipping Address</label>
+                                    <input type="text" id="address" placeholder="1234 Eco Drive" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-eco-green focus:border-eco-green">
+                                </div>
+                                 <div class="mb-4">
+                                    <label for="city" class="block text-sm font-medium text-gray-700">City</label>
+                                    <input type="text" id="city" placeholder="Greenville" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-eco-green focus:border-eco-green">
+                                </div>
+                                <button type="button" class="w-full mt-2 bg-eco-green text-white px-6 py-3 rounded-full font-semibold hover:bg-eco-green-dark transition-all duration-300 shadow-md">Proceed to Payment</button>
+                            </form>
+                        </div>
+                        
+                        <div class="bg-white p-8 rounded-lg shadow-md border-2 border-transparent hover:border-eco-green transition-all">
+                             <div class="flex items-center mb-4">
+                                <i class="fas fa-hands-helping text-3xl text-eco-green mr-4"></i>
+                                <h3 class="text-2xl font-bold text-gray-800">In-Person Exchange</h3>
+                            </div>
+                            <p class="text-gray-600 mb-6">Meet the seller in a public place to exchange the item. Safe, fast, and no shipping fees.</p>
+                             <div class="bg-gray-100 p-4 rounded-md">
+                                <h4 class="font-semibold text-gray-800 mb-2">Suggested Meeting Points:</h4>
+                                <ul class="list-disc list-inside text-gray-600 space-y-1">
+                                    <li>City Central Library</li>
+                                    <li>Community Tech Hub</li>
+                                    <li>Local Police Station "Safe Zone"</li>
+                                </ul>
+                            </div>
+                            <button type="button" class="w-full mt-6 bg-gray-800 text-white px-6 py-3 rounded-full font-semibold hover:bg-gray-700 transition-all duration-300 shadow-md">Arrange Meetup</button>
+                        </div>
+                    </div>
+                 </div>
+            </div>
+        </div>
+
+        <div id="sell" class="page">
+            <div class="container mx-auto px-6 py-12">
+                <div class="max-w-3xl mx-auto bg-white p-8 rounded-lg shadow-xl">
+                    <h2 class="text-3xl font-bold text-gray-900 mb-6 text-center">List Your Device</h2>
+                    <form id="sell-form">
+                        <div class="mb-4">
+                            <label for="product-name" class="block text-sm font-medium text-gray-700">Product Name</label>
+                            <input type="text" id="product-name" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-eco-green focus:border-eco-green" required>
+                        </div>
+                        <div class="mb-4">
+                            <label for="product-description" class="block text-sm font-medium text-gray-700">Description</label>
+                            <textarea id="product-description" rows="4" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-eco-green focus:border-eco-green" required></textarea>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                            <div><label for="product-condition" class="block text-sm font-medium text-gray-700">Condition</label><select id="product-condition" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-eco-green focus:border-eco-green sm:text-sm rounded-md"><option>New</option><option>Used - Like New</option><option>Used - Good</option><option>Used - Fair</option><option>For Parts/Not Working</option></select></div>
+                            <div><label for="product-price" class="block text-sm font-medium text-gray-700">Price ($)</label><input type="number" id="product-price" placeholder="e.g., 299" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-eco-green focus:border-eco-green" required></div>
+                        </div>
+                        <div class="mb-6"><label class="block text-sm font-medium text-gray-700">Upload Photos</label><div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md"><div class="space-y-1 text-center"><svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true"><path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg><div class="flex text-sm text-gray-600"><label for="file-upload" class="relative cursor-pointer bg-white rounded-md font-medium text-eco-green hover:text-eco-green-dark focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-eco-green"><span>Upload a file</span><input id="file-upload" name="file-upload" type="file" class="sr-only"></label><p class="pl-1">or drag and drop</p></div><p class="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p></div></div></div>
+                        <div class="text-center"><button type="submit" class="w-full bg-eco-green text-white px-8 py-3 rounded-full font-semibold hover:bg-eco-green-dark transition-all duration-300 shadow-lg transform hover:scale-105">List My Device</button></div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <div id="articles" class="page">
+             <div class="py-12 bg-white">
+                <div class="container mx-auto px-6">
+                    <div class="text-center">
+                        <p class="text-eco-green font-semibold">EMPOWER</p>
+                        <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mt-2">Share, Learn, Upgrade</h2>
+                        <p class="text-gray-600 max-w-2xl mx-auto mt-4">Join our community to recycle and upgrade your electronics with shared knowledge and support.</p>
+                    </div>
+                    <div class="mt-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        <div class="bg-gray-50 p-6 rounded-lg text-center"><i class="fas fa-recycle text-3xl text-eco-green mb-4"></i><h3 class="font-bold text-xl mb-2">Unlock the Secrets of DIY Electronics</h3><p class="text-gray-600">Explore our extensive resources on recycling techniques to give your electronics a new life.</p></div>
+                        <div class="bg-gray-50 p-6 rounded-lg text-center"><i class="fas fa-tools text-3xl text-eco-green mb-4"></i><h3 class="font-bold text-xl mb-2">Step-by-Step Upgrade Guides</h3><p class="text-gray-600">Dive into our DIY tutorials and transform your gadgets with ease.</p></div>
+                        <div class="bg-gray-50 p-6 rounded-lg text-center"><i class="fas fa-search text-3xl text-eco-green mb-4"></i><h3 class="font-bold text-xl mb-2">Troubleshooting Made Easy</h3><p class="text-gray-600">Find quick fixes and expert advice to tackle everyday electronic problems.</p></div>
+                    </div>
+                </div>
+                <div class="container mx-auto px-6 py-12 mt-12">
+                <h2 class="text-3xl font-bold text-gray-900 mb-8 text-center">Upgrade and Recycle Electronics</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div class="bg-white rounded-lg shadow-md overflow-hidden transform hover:-translate-y-2 transition-transform duration-300"><img src="https://images.pexels.com/photos/442150/pexels-photo-442150.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" class="w-full h-48 object-cover" alt="Upcycled old phones"><div class="p-6"><p class="text-sm text-gray-500 mb-2">DIY &middot; 5 min read</p><h3 class="text-xl font-bold mb-2">10 Creative Ways to Upcycle Your Old Smartphone</h3><p class="text-gray-600 mb-4">Turn it into a security camera, a smart home remote, and more!</p><a href="https://www.pcmag.com/how-to/12-creative-ways-to-repurpose-your-old-smartphone" target="_blank" rel="noopener noreferrer" class="text-eco-green font-semibold hover:underline">Read More &gt;</a></div></div>
+                    <div class="bg-white rounded-lg shadow-md overflow-hidden transform hover:-translate-y-2 transition-transform duration-300"><img src="https://images.pexels.com/photos/592753/pexels-photo-592753.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" class="w-full h-48 object-cover" alt="Person repairing a laptop"><div class="p-6"><p class="text-sm text-gray-500 mb-2">REPAIR GUIDE &middot; 8 min read</p><h3 class="text-xl font-bold mb-2">The Ultimate Guide to Laptop Battery Replacement</h3><p class="text-gray-600 mb-4">Breathe new life into your aging laptop with our step-by-step guide.</p><a href="https://www.theverge.com/23887515/laptop-battery-replacement-guide-hp-dell-macbook" target="_blank" rel="noopener noreferrer" class="text-eco-green font-semibold hover:underline">Read More &gt;</a></div></div>
+                    <div class="bg-white rounded-lg shadow-md overflow-hidden transform hover:-translate-y-2 transition-transform duration-300"><img src="https://images.pexels.com/photos/7988086/pexels-photo-7988086.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" class="w-full h-48 object-cover" alt="Pile of electronic waste"><div class="p-6"><p class="text-sm text-gray-500 mb-2">SUSTAINABILITY &middot; 4 min read</p><h3 class="text-xl font-bold mb-2">E-Waste: The Growing Problem and How You Can Help</h3><p class="text-gray-600 mb-4">Learn about the environmental impact of e-waste and what you can do.</p><a href="https://www.epa.gov/circulareconomy/electronics-donation-and-recycling" target="_blank" rel="noopener noreferrer" class="text-eco-green font-semibold hover:underline">Read More &gt;</a></div></div>
+                </div>
+               </div>
+             </div>
+        </div>
+
+        <div id="community" class="page">
+            <div class="py-12 bg-white">
+                <div class="container mx-auto px-6">
+                    <div class="text-center">
+                        <p class="text-eco-green font-semibold">TOGETHER</p>
+                        <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mt-2">Join Our Community</h2>
+                        <p class="text-gray-600 max-w-2xl mx-auto mt-4">Connect with like-minded individuals and enhance your skills in recycling and upgrading electronics.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="container mx-auto px-6 py-12">
+               <h2 class="text-3xl font-bold text-gray-900 mb-4 text-center">Meet Our Team</h2>
+               <p class="text-center text-gray-600 mb-12 max-w-2xl mx-auto">Meet the passionate individuals behind our community, dedicated to helping you and the planet.</p>
+               <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 text-center">
+                    <div class="bg-white p-6 rounded-lg shadow-md"><img class="w-24 h-24 rounded-full mx-auto mb-4" src="https://placehold.co/100x100/e2e8f0/adb5bd?text=A" alt="Alice"><h3 class="font-bold text-lg">Alice Johnson</h3><p class="text-sm text-eco-green">Community Manager</p></div>
+                    <div class="bg-white p-6 rounded-lg shadow-md"><img class="w-24 h-24 rounded-full mx-auto mb-4" src="https://placehold.co/100x100/e2e8f0/adb5bd?text=B" alt="Bob"><h3 class="font-bold text-lg">Bob Smith</h3><p class="text-sm text-eco-green">Tech Expert</p></div>
+                    <div class="bg-white p-6 rounded-lg shadow-md"><img class="w-24 h-24 rounded-full mx-auto mb-4" src="https://placehold.co/100x100/e2e8f0/adb5bd?text=C" alt="Cathy"><h3 class="font-bold text-lg">Cathy Lee</h3><p class="text-sm text-eco-green">Support Specialist</p></div>
+                    <div class="bg-white p-6 rounded-lg shadow-md"><img class="w-24 h-24 rounded-full mx-auto mb-4" src="https://placehold.co/100x100/e2e8f0/adb5bd?text=D" alt="David"><h3 class="font-bold text-lg">David Kim</h3><p class="text-sm text-eco-green">Content Creator</p></div>
+               </div>
+            </div>
+            <div class="py-12 bg-gray-100">
+                <div class="container mx-auto px-6">
+                    <h2 class="text-3xl font-bold text-gray-900 mb-8 text-center">Frequently Asked Questions</h2>
+                    <div class="max-w-3xl mx-auto space-y-4" id="faq-container">
+                        <div class="faq-item bg-white p-4 rounded-lg shadow-sm"><div class="faq-question flex justify-between items-center cursor-pointer"><h3 class="font-semibold text-lg">How do I join the community?</h3><i class="fas fa-chevron-down faq-icon transition-transform"></i></div><div class="faq-answer mt-2 text-gray-600 border-t pt-2"><p>Joining is easy! Simply create an account on our platform and start engaging with other members. You'll gain access to discussions, resources, and support.</p></div></div>
+                        <div class="faq-item bg-white p-4 rounded-lg shadow-sm"><div class="faq-question flex justify-between items-center cursor-pointer"><h3 class="font-semibold text-lg">Can I ask for help with repairs?</h3><i class="fas fa-chevron-down faq-icon transition-transform"></i></div><div class="faq-answer mt-2 text-gray-600 border-t pt-2"><p>Absolutely! Our community thrives on questions. Feel free to post any inquiries you have about repairs, upgrades, or recycling, and our members will be eager to help you find answers.</p></div></div>
+                        <div class="faq-item bg-white p-4 rounded-lg shadow-sm"><div class="faq-question flex justify-between items-center cursor-pointer"><h3 class="font-semibold text-lg">How do I engage with others?</h3><i class="fas fa-chevron-down faq-icon transition-transform"></i></div><div class="faq-answer mt-2 text-gray-600 border-t pt-2"><p>Engagement is key! Participate in discussions, provide feedback, and share your experiences. The more you interact, the richer your community experience will be.</p></div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="bg-gray-800 text-white pt-16 pb-8">
+        <div class="container mx-auto px-6">
+            <div class="grid grid-cols-2 md:grid-cols-6 gap-8 mb-8">
+                <div class="col-span-2 md:col-span-2">
+                    <h4 class="font-semibold mb-4">Subscribe to updates</h4>
+                    <p class="text-gray-400 mb-4">Stay informed about our latest products and offers.</p>
+                     <form class="flex"><input type="email" placeholder="Your email here" class="bg-gray-700 text-white px-4 py-2 rounded-l-md focus:outline-none focus:ring-2 focus:ring-eco-green w-full"><button class="bg-eco-green text-white px-4 py-2 rounded-r-md hover:bg-eco-green-dark transition-colors">Join</button></form>
+                </div>
+                <div><h5 class="font-bold mb-4">Helpful Links</h5><ul class="space-y-2 text-gray-400"><li class="hover:text-white"><a href="#">Contact Us</a></li><li class="hover:text-white"><a href="#">About Us</a></li><li class="hover:text-white"><a href="#">FAQs</a></li><li class="hover:text-white"><a href="#">Support Center</a></li></ul></div>
+                <div><h5 class="font-bold mb-4">Resources</h5><ul class="space-y-2 text-gray-400"><li class="hover:text-white"><a href="#">Blog</a></li><li class="hover:text-white"><a href="#">Careers</a></li><li class="hover:text-white"><a href="#">Privacy Policy</a></li><li class="hover:text-white"><a href="#">Terms of Service</a></li></ul></div>
+                <div><h5 class="font-bold mb-4">Get In Touch</h5><ul class="space-y-2 text-gray-400"><li class="hover:text-white"><a href="#">Email Us</a></li><li class="hover:text-white"><a href="#">Live Chat</a></li><li class="hover:text-white"><a href="#">Phone Support</a></li><li class="hover:text-white"><a href="#">Help Center</a></li></ul></div>
+                <div><h5 class="font-bold mb-4">Connect</h5><ul class="space-y-2 text-gray-400"><li class="hover:text-white"><a href="#">Community Forum</a></li><li class="hover:text-white"><a href="#">Share Your Story</a></li><li class="hover:text-white"><a href="#">Get Support</a></li><li class="hover:text-white"><a href="#">Explore More</a></li></ul></div>
+            </div>
+            <div class="border-t border-gray-700 pt-8 flex flex-col sm:flex-row justify-between items-center">
+                <p class="text-gray-500 text-sm">&copy; 2025 Re-Tech. All rights reserved.</p>
+                <div class="flex space-x-6 mt-4 sm:mt-0"><a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-facebook-f"></i></a><a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-twitter"></i></a><a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-instagram"></i></a><a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-linkedin-in"></i></a></div>
+            </div>
+        </div>
+    </footer>
+
+    <div id="integrity-modal" class="modal-overlay">
+        <div class="modal-container">
+            <h3 class="text-xl font-bold mb-4">Seller Integrity Agreement</h3>
+            <p class="text-gray-600 mb-4">To maintain a safe and trustworthy marketplace for everyone, you must agree to the following terms:</p>
+            <ul class="list-disc list-inside text-gray-600 space-y-2 mb-6">
+                <li>I will post only genuine, functional products unless clearly marked as "For Parts/Not Working".</li>
+                <li>I will describe my items accurately and honestly.</li>
+                <li>I will not engage in any form of scamming or fraudulent activity.</li>
+            </ul>
+            <div class="flex items-center mb-6">
+                <input id="integrity-checkbox" type="checkbox" class="h-4 w-4 text-eco-green focus:ring-eco-green border-gray-300 rounded">
+                <label for="integrity-checkbox" class="ml-2 block text-sm text-gray-900">I have read and agree to these terms.</label>
+            </div>
+            <div class="flex justify-end space-x-4">
+                <button id="modal-cancel-btn" class="px-6 py-2 bg-gray-200 text-gray-800 rounded-full hover:bg-gray-300">Cancel</button>
+                <button id="modal-confirm-btn" class="px-6 py-2 bg-eco-green text-white rounded-full hover:bg-eco-green-dark disabled:bg-gray-400" disabled>Confirm & List Item</button>
+            </div>
+        </div>
+    </div>
+
+
+<script>
+    // --- Basic Page Navigation ---
+    const navLinks = document.querySelectorAll('.nav-link');
+    const pages = document.querySelectorAll('.page');
+
+    function showPage(pageId, stateAction = 'push') {
+        pages.forEach(page => page.classList.remove('active'));
+        const targetPage = document.getElementById(pageId);
+        if(targetPage) targetPage.classList.add('active');
+        
+        if (stateAction === 'push') {
+             window.history.pushState({page: pageId}, pageId, `#${pageId}`);
+        }
+
+        // Update active class on nav links
+        navLinks.forEach(link => {
+            const linkPageId = link.getAttribute('href').substring(1);
+            if(linkPageId === pageId) {
+                link.classList.add('text-eco-green', 'font-semibold');
+            } else {
+                link.classList.remove('text-eco-green', 'font-semibold');
+            }
+        });
+        window.scrollTo(0, 0);
+    }
+
+    navLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+            const pageId = link.getAttribute('href').substring(1);
+            if(document.getElementById(pageId)) {
+                e.preventDefault();
+                showPage(pageId);
+            }
+        });
+    });
+
+    // Handle browser back/forward
+    window.addEventListener('popstate', e => {
+        if(e.state && e.state.page) {
+            showPage(e.state.page, 'replace'); // Use 'replace' to not create new history entries
+        } else {
+            showPage('home', 'replace');
+        }
+    });
+
+    // Show initial page based on URL hash or default to home
+    const initialPage = window.location.hash.substring(1) || 'home';
+    showPage(initialPage, 'replace');
+
+    // --- Product Filtering and Sorting Logic ---
+    const productGrid = document.getElementById('product-grid');
+    const deviceTypeFilter = document.getElementById('device-type');
+    const priceRange = document.getElementById('price-range');
+    const priceValue = document.getElementById('price-value');
+    const distanceRange = document.getElementById('distance-range');
+    const distanceValue = document.getElementById('distance-value');
+    const sortBy = document.getElementById('sort-by');
+
+    const products = [
+        { name: 'Smartphone X', type: 'Smartphone', price: 299, distance: 50, image: 'https://images.pexels.com/photos/1786433/pexels-photo-1786433.jpeg?auto=compress&cs=tinysrgb&w=600' },
+        { name: 'Laptop Pro', type: 'Laptop', price: 1199, distance: 120, image: 'https://images.pexels.com/photos/205421/pexels-photo-205421.jpeg?auto=compress&cs=tinysrgb&w=600' },
+        { name: 'Tablet Mini', type: 'Tablet', price: 199, distance: 25, image: 'https://images.pexels.com/photos/221185/pexels-photo-221185.jpeg?auto=compress&cs=tinysrgb&w=600' },
+        { name: 'Headphones Plus', type: 'Headphones', price: 89, distance: 15, image: 'https://images.pexels.com/photos/1649771/pexels-photo-1649771.jpeg?auto=compress&cs=tinysrgb&w=600' },
+        { name: 'Apple Watch', type: 'Smartwatch', price: 250, distance: 80, image: 'https://images.pexels.com/photos/437037/pexels-photo-437037.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1' },
+        { name: 'Camera Pro', type: 'Camera', price: 550, distance: 250, image: 'https://images.pexels.com/photos/51383/photo-camera-subject-photographer-51383.jpeg?auto=compress&cs=tinysrgb&w=600' },
+        { name: 'Lenovo Gaming Laptop', type: 'Laptop', price: 1899, distance: 300, image: 'https://images.pexels.com/photos/1779487/pexels-photo-1779487.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1' },
+        { name: 'Kindle Paperwhite', type: 'Tablet', price: 120, distance: 45, image: 'https://images.pexels.com/photos/4158/apple-iphone-books-macbook.jpg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1' },
+    ];
+
+    function renderProducts(filteredProducts) {
+        if (!productGrid) return;
+        productGrid.innerHTML = '';
+        if (filteredProducts.length === 0) {
+            productGrid.innerHTML = `<p class="text-gray-500 col-span-full text-center">No products match your criteria.</p>`;
+            return;
+        }
+        filteredProducts.forEach(product => {
+            const productCard = document.createElement('div');
+            productCard.className = "bg-white rounded-lg shadow-md overflow-hidden transform hover:-translate-y-2 transition-transform duration-300";
+            productCard.innerHTML = `<img src="${product.image}" class="w-full h-48 object-cover" alt="${product.name}"><div class="p-6"><h3 class="text-xl font-bold mb-2">${product.name}</h3><p class="text-gray-500 text-sm mb-2">${product.type}</p><div class="flex justify-between items-center"><p class="text-lg font-semibold text-eco-green">$${product.price}</p><p class="text-sm text-gray-500">${product.distance} km away</p></div><button class="buy-now-btn w-full mt-4 bg-eco-green text-white px-4 py-2 rounded-full hover:bg-eco-green-dark transition-colors">Buy Now</button></div>`;
+            productGrid.appendChild(productCard);
+        });
+        
+        // Add event listeners to new buttons
+        document.querySelectorAll('.buy-now-btn').forEach(button => {
+            button.addEventListener('click', () => {
+                showPage('delivery');
+            });
+        });
+    }
+
+    function filterAndSortProducts() {
+        let tempProducts = [...products];
+        if(deviceTypeFilter) {
+            const type = deviceTypeFilter.value;
+            if (type !== 'All') tempProducts = tempProducts.filter(p => p.type === type);
+        }
+        if(priceRange) tempProducts = tempProducts.filter(p => p.price <= parseInt(priceRange.value));
+        if(distanceRange) tempProducts = tempProducts.filter(p => p.distance <= parseInt(distanceRange.value));
+        if(sortBy) {
+            const sortValue = sortBy.value;
+            if(sortValue === 'price-asc') tempProducts.sort((a, b) => a.price - b.price);
+            else if (sortValue === 'price-desc') tempProducts.sort((a, b) => b.price - a.price);
+            else if (sortValue === 'distance-asc') tempProducts.sort((a, b) => a.distance - b.distance);
+        }
+        renderProducts(tempProducts);
+    }
+    
+    if(document.getElementById('products')) {
+        deviceTypeFilter.addEventListener('change', filterAndSortProducts);
+        sortBy.addEventListener('change', filterAndSortProducts);
+        priceRange.addEventListener('input', () => { priceValue.textContent = priceRange.value; filterAndSortProducts(); });
+        distanceRange.addEventListener('input', () => { distanceValue.textContent = distanceRange.value; filterAndSortProducts(); });
+        filterAndSortProducts();
+    }
+
+    // --- FAQ Accordion ---
+    const faqContainer = document.getElementById('faq-container');
+    if (faqContainer) {
+        faqContainer.addEventListener('click', function(e) {
+            const question = e.target.closest('.faq-question');
+            if (question) {
+                const faqItem = question.parentElement;
+                faqItem.classList.toggle('active');
+            }
+        });
+    }
+
+    // --- Sell Page Modal Logic ---
+    const sellForm = document.getElementById('sell-form');
+    const modal = document.getElementById('integrity-modal');
+    const integrityCheckbox = document.getElementById('integrity-checkbox');
+    const confirmBtn = document.getElementById('modal-confirm-btn');
+    const cancelBtn = document.getElementById('modal-cancel-btn');
+
+    if(sellForm && modal) {
+        sellForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            modal.style.display = 'flex';
+        });
+
+        integrityCheckbox.addEventListener('change', function() {
+            confirmBtn.disabled = !this.checked;
+        });
+
+        cancelBtn.addEventListener('click', function() {
+            modal.style.display = 'none';
+        });
+
+        confirmBtn.addEventListener('click', function() {
+            alert('Your item has been listed successfully!');
+            modal.style.display = 'none';
+            sellForm.reset();
+            integrityCheckbox.checked = false;
+            confirmBtn.disabled = true;
+        });
+    }
+
+</script>
+
+</body>
+</html>
