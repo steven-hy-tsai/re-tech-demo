@@ -8,11 +8,25 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <style>
+        html {
+            scroll-behavior: smooth;
+        }
         body {
             font-family: 'Inter', sans-serif;
         }
         .hero-section {
             background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('https://images.pexels.com/photos/7750766/pexels-photo-7750766.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1');
+            background-size: cover;
+            background-position: center;
+        }
+        .donate-hero-section {
+             background-image: linear-gradient(to right, rgba(34, 197, 94, 0.8), rgba(22, 163, 74, 0.9)), url('https://images.pexels.com/photos/6992440/pexels-photo-6992440.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1');
+            background-size: cover;
+            background-attachment: fixed; /* Parallax effect */
+        }
+        /* New hero section for Scrap Your Junk page - now with green overlay */
+        .scrap-hero-section {
+            background-image: linear-gradient(to right, rgba(34, 197, 94, 0.8), rgba(22, 163, 74, 0.9)), url('https://images.pexels.com/photos/54316/electronic-waste-rubbish-waste-cabling-54316.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1');
             background-size: cover;
             background-position: center;
         }
@@ -22,47 +36,64 @@
         .page.active {
             display: block;
         }
-        /* Custom green color */
         .text-eco-green { color: #22c55e; }
         .bg-eco-green { background-color: #22c55e; }
         .hover\:bg-eco-green-dark:hover { background-color: #16a34a; }
         .border-eco-green { border-color: #22c55e; }
         .ring-eco-green:focus { ring-color: #22c55e; }
-
-        .faq-answer {
-            display: none;
-            transition: max-height 0.3s ease-in-out;
-            max-height: 0;
-            overflow: hidden;
-        }
-        .faq-item.active .faq-answer {
-            display: block;
-            max-height: 200px; /* Adjust as needed */
-        }
-        .faq-item.active .faq-icon {
-            transform: rotate(180deg);
-        }
+        .faq-answer { display: none; transition: max-height 0.3s ease-in-out; max-height: 0; overflow: hidden; }
+        .faq-item.active .faq-answer { display: block; max-height: 200px; }
+        .faq-item.active .faq-icon { transform: rotate(180deg); }
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0, 0, 0, 0.6); justify-content: center; align-items: center; z-index: 1000; }
+        .modal-container { background-color: white; padding: 2rem; border-radius: 0.5rem; max-width: 500px; width: 90%; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
         
-        /* Modal Styles */
-        .modal-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: rgba(0, 0, 0, 0.6);
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
+        /* Fade-in Animation */
+        .fade-in-section {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
         }
-        .modal-container {
-            background-color: white;
-            padding: 2rem;
-            border-radius: 0.5rem;
-            max-width: 500px;
-            width: 90%;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        .fade-in-section.is-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .supporter-logo {
+            transition: transform 0.3s ease;
+            filter: grayscale(100%);
+        }
+        .supporter-logo:hover {
+            transform: scale(1.1);
+            filter: grayscale(0%);
+        }
+
+        /* Specific styles for Scrap Your Junk page device tiles */
+        .device-tile {
+            @apply bg-white rounded-xl shadow-lg overflow-hidden cursor-pointer transform transition-all duration-300;
+        }
+        .device-tile:hover {
+            @apply -translate-y-2 scale-105 shadow-2xl;
+        }
+        .device-tile img {
+            @apply w-full h-48 object-cover object-center;
+        }
+        .device-tile-content {
+            @apply p-6 text-center;
+        }
+        .device-tile-content h3 {
+            @apply text-xl font-bold text-gray-900 mb-2;
+        }
+        .device-tile-content p {
+            @apply text-gray-600 text-sm mb-4;
+        }
+        .device-tile-content .view-components-btn {
+            @apply bg-eco-green text-white px-5 py-2 rounded-full hover:bg-eco-green-dark transition-colors font-semibold;
+        }
+        /* Component modal specific styles */
+        .component-list li {
+            @apply flex items-center mb-2 text-gray-700;
+        }
+        .component-list li i {
+            @apply text-eco-green mr-3 text-xl;
         }
     </style>
 </head>
@@ -71,59 +102,128 @@
     <header class="bg-white/80 backdrop-blur-md sticky top-0 z-50 border-b border-gray-200">
         <div class="container mx-auto px-6 py-4 flex justify-between items-center">
             <div class="flex items-center space-x-2">
-                <svg class="h-8 w-8 text-eco-green"  fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
-                </svg>
+                <i class="fas fa-recycle text-3xl text-eco-green"></i>
                 <h1 class="text-2xl font-bold text-gray-900">Re-Tech</h1>
             </div>
             <nav class="hidden md:flex items-center space-x-8">
                 <a href="#home" class="nav-link text-gray-600 hover:text-eco-green transition-colors">Home</a>
+                <a href="#donate" class="nav-link text-gray-600 hover:text-eco-green transition-colors">Donate</a>
                 <a href="#products" class="nav-link text-gray-600 hover:text-eco-green transition-colors">Products</a>
+                <!-- New navigation link for Scrap Your Junk -->
+                <a href="#scrap-junk" class="nav-link text-gray-600 hover:text-eco-green transition-colors">Scrap Your Junk</a>
                 <a href="#sell" class="nav-link text-gray-600 hover:text-eco-green transition-colors">Sell</a>
                 <a href="#articles" class="nav-link text-gray-600 hover:text-eco-green transition-colors">Knowledge</a>
                 <a href="#community" class="nav-link text-gray-600 hover:text-eco-green transition-colors">Community</a>
             </nav>
             <div class="flex items-center space-x-4">
-                <a href="#" class="hidden sm:inline-block text-gray-600 hover:text-eco-green transition-colors">Join</a>
+                <a href="#community" class="nav-link hidden sm:inline-block text-gray-600 hover:text-eco-green transition-colors">Join</a>
                 <a href="#products" class="nav-link bg-eco-green text-white px-5 py-2 rounded-full hover:bg-eco-green-dark transition-all duration-300 shadow-md">Shop</a>
             </div>
         </div>
     </header>
 
     <main>
+        <!-- Home Page -->
         <div id="home" class="page active">
             <section class="hero-section text-center py-24 md:py-40 text-white">
                 <div class="container mx-auto px-6">
                     <h2 class="text-4xl md:text-6xl font-bold leading-tight mb-4">Welcome to Your Electronic Exchange Community</h2>
                     <p class="text-lg md:text-xl text-gray-200 max-w-3xl mx-auto mb-8">Join us where buying, selling, and upcycling electronics is easy and rewarding. Connect with like-minded individuals and reduce e-waste today!</p>
-                    <div class="flex justify-center space-x-4">
+                    <div class="flex flex-wrap justify-center gap-4">
                         <a href="#products" class="nav-link bg-eco-green text-white px-8 py-3 rounded-full font-semibold hover:bg-eco-green-dark transition-all duration-300 shadow-lg transform hover:scale-105">Buy Electronics</a>
                         <a href="#sell" class="nav-link bg-white text-gray-800 px-8 py-3 rounded-full font-semibold hover:bg-gray-200 transition-all duration-300 shadow-lg transform hover:scale-105">Sell Electronics</a>
+                        <a href="#donate" class="nav-link border-2 border-white text-white px-8 py-3 rounded-full font-semibold hover:bg-white hover:text-eco-green transition-all duration-300 shadow-lg transform hover:scale-105">Donate Now</a>
                     </div>
                 </div>
             </section>
+            <!-- Call-to-action for Scrap Your Junk on Home Page -->
             <section class="py-20 md:py-24 bg-white">
                 <div class="container mx-auto px-6">
                     <div class="flex flex-col md:flex-row items-center justify-between gap-12 md:gap-16">
                         <div class="md:w-1/2">
-                            <p class="text-eco-green font-semibold mb-2">DISCOVER</p>
-                            <h3 class="text-3xl md:text-4xl font-bold text-gray-900 mb-6">Find Your Next Electronic Device Today</h3>
-                            <p class="text-gray-600 mb-8">Explore a wide range of electronic products tailored to your needs. Our platform connects buyers with quality devices at competitive prices.</p>
-                             <div class="flex items-center space-x-4">
-                                 <a href="#products" class="nav-link bg-eco-green text-white px-6 py-3 rounded-full hover:bg-eco-green-dark transition-all duration-300 shadow-md">Shop Now</a>
-                                 <a href="#community" class="nav-link text-eco-green font-semibold hover:underline">Learn More &gt;</a>
-                             </div>
+                            <p class="text-eco-green font-semibold mb-2">DISCOVER VALUE</p>
+                            <h3 class="text-3xl md:text-4xl font-bold text-gray-900 mb-6">Unlock the Hidden Potential in Your Old Devices</h3>
+                            <p class="text-gray-600 mb-8">Learn what valuable components lie within your unused electronics and how you can recycle, reuse, or even sell them. Reduce waste, earn value!</p>
+                            <div class="flex items-center space-x-4">
+                                <a href="#scrap-junk" class="nav-link bg-eco-green text-white px-6 py-3 rounded-full hover:bg-eco-green-dark transition-all duration-300 shadow-md">Explore Components</a>
+                                <a href="#articles" class="nav-link text-eco-green font-semibold hover:underline">Learn About Recycling &gt;</a>
+                            </div>
                         </div>
                         <div class="md:w-1/2">
-                            <div class="bg-gray-100 rounded-lg">
-                                <img src="https://images.pexels.com/photos/8534320/pexels-photo-8534320.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" alt="A plant growing from a smartphone held in hands" class="rounded-lg shadow-xl object-cover">
-                            </div>
+    <div class="bg-gray-100 rounded-lg overflow-hidden shadow-xl">
+        <img src="https://t4.ftcdn.net/jpg/11/14/67/39/360_F_1114673914_xNUrIRr3A5sNWu3wBAdGHvcyx8UipIAG.jpg" 
+             class="w-full h-full object-cover rounded-lg transition duration-300 ease-in-out hover:scale-105" 
+             alt="Recycled electronics">
+    </div>
+</div>
+
                         </div>
                     </div>
                 </div>
             </section>
         </div>
 
+        <!-- Donate Page -->
+        <div id="donate" class="page">
+            <section class="donate-hero-section text-white text-center py-24 md:py-32">
+                <div class="container mx-auto px-6">
+                    <h2 class="text-4xl md:text-6xl font-bold leading-tight mb-4">Give Your Old Electronics a New Life</h2>
+                    <p class="text-lg md:text-xl text-gray-100 max-w-3xl mx-auto mb-8">Join our mission to reduce e-waste and empower communities through your generous donations.</p>
+                    <!-- Added id to the button for specific event listener -->
+                    <a id="donate-scroll-button" href="#donation-form-section" class="bg-white text-eco-green px-8 py-3 rounded-full font-bold hover:bg-gray-200 transition-all duration-300 shadow-lg transform hover:scale-105 inline-block">Scroll down to Donate</a>
+                </div>
+            </section>
+
+            <section class="py-20 bg-white fade-in-section">
+                 <div class="container mx-auto px-6 text-center">
+                     <h3 class="text-3xl font-bold text-gray-900 mb-4">Why Your Donation Matters</h3>
+                     <p class="text-gray-600 max-w-3xl mx-auto mb-12">Every device you donate makes a huge difference. You're not just clearing out clutter—you're protecting our planet and providing essential technology to those in need.</p>
+                     <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                         <div class="bg-gray-50 p-6 rounded-lg">
+                             <i class="fas fa-leaf text-4xl text-eco-green mb-4"></i>
+                             <p class="text-5xl font-bold text-gray-800" data-target="1250">0</p>
+                             <p class="text-gray-600 mt-2">Devices Saved from Landfills</p>
+                         </div>
+                         <div class="bg-gray-50 p-6 rounded-lg">
+                             <i class="fas fa-school text-4xl text-eco-green mb-4"></i>
+                             <p class="text-5xl font-bold text-gray-800" data-target="58">300</p>
+                             <p class="text-gray-600 mt-2">Schools & Communities Supported</p>
+                         </div>
+                          <div class="bg-gray-50 p-6 rounded-lg">
+                             <i class="fas fa-globe-americas text-4xl text-eco-green mb-4"></i>
+                             <p class="text-5xl font-bold text-gray-800" data-target="4">5000</p>
+                             <p class="text-gray-600 mt-2">Tons of E-Waste Reduced</p>
+                         </div>
+                     </div>
+                 </div>
+            </section>
+
+             <section id="donation-form-section" class="py-20 bg-gray-100 fade-in-section">
+                <div class="container mx-auto px-6">
+                    <div class="max-w-3xl mx-auto bg-white p-8 rounded-lg shadow-xl">
+                        <h2 class="text-3xl font-bold text-gray-900 mb-6 text-center">Donate Your Device</h2>
+                        <form id="donation-form">
+                            <div class="mb-4">
+                                <label for="donor-name" class="block text-sm font-medium text-gray-700">Your Name</label>
+                                <input type="text" id="donor-name" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-eco-green focus:border-eco-green" required>
+                            </div>
+                            <div class="mb-4">
+                                <label for="donor-email" class="block text-sm font-medium text-gray-700">Your Contact Email</label>
+                                <input type="email" id="donor-email" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-eco-green focus:border-eco-green" required>
+                            </div>
+                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                <div><label for="item-name" class="block text-sm font-medium text-gray-700">Item Name</label><input type="text" id="item-name" placeholder="e.g., Dell Laptop" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-eco-green focus:border-eco-green" required></div>
+                                <div><label for="item-condition" class="block text-sm font-medium text-gray-700">Condition</label><select id="item-condition" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-eco-green focus:border-eco-green sm:text-sm rounded-md"><option>Working</option><option>Needs Repair</option><option>For Parts</option></select></div>
+                            </div>
+                            <div class="mb-6"><label class="block text-sm font-medium text-gray-700">Upload Photo</label><div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md"><div class="space-y-1 text-center"><i class="fas fa-camera text-4xl text-gray-400"></i><div class="flex text-sm text-gray-600"><label for="donation-file-upload" class="relative cursor-pointer bg-white rounded-md font-medium text-eco-green hover:text-eco-green-dark focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-eco-green"><span>Upload a file</span><input id="donation-file-upload" name="donation-file-upload" type="file" class="sr-only" accept=".jpg, .png"></label></div><p class="text-xs text-gray-500">PNG or JPG</p></div></div></div>
+                            <div class="text-center"><button type="submit" class="w-full bg-eco-green text-white px-8 py-3 rounded-full font-semibold hover:bg-eco-green-dark transition-all duration-300 shadow-lg transform hover:scale-105">Submit Donation</button></div>
+                        </form>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- Products Page -->
         <div id="products" class="page">
              <div class="container mx-auto px-6 py-12">
                 <h2 class="text-3xl font-bold text-gray-900 mb-8 text-center">Browse Products</h2>
@@ -137,70 +237,29 @@
             </div>
         </div>
         
+        <!-- Delivery Page -->
         <div id="delivery" class="page">
             <div class="container mx-auto px-6 py-12">
                  <div class="max-w-4xl mx-auto">
                     <h2 class="text-3xl font-bold text-gray-900 mb-2 text-center">Choose Your Delivery Method</h2>
                     <p class="text-center text-gray-600 mb-10">Select a secure and convenient option to receive your item.</p>
-                    
                     <div class="grid md:grid-cols-2 gap-8">
-                        <div class="bg-white p-8 rounded-lg shadow-md border-2 border-transparent hover:border-eco-green transition-all">
-                            <div class="flex items-center mb-4">
-                                <i class="fas fa-truck text-3xl text-eco-green mr-4"></i>
-                                <h3 class="text-2xl font-bold text-gray-800">Courier Delivery</h3>
-                            </div>
-                            <p class="text-gray-600 mb-6">Have the item shipped directly to your address. Secure, tracked, and insured shipping.</p>
-                            <form>
-                                <div class="mb-4">
-                                    <label for="address" class="block text-sm font-medium text-gray-700">Shipping Address</label>
-                                    <input type="text" id="address" placeholder="1234 Eco Drive" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-eco-green focus:border-eco-green">
-                                </div>
-                                 <div class="mb-4">
-                                    <label for="city" class="block text-sm font-medium text-gray-700">City</label>
-                                    <input type="text" id="city" placeholder="Greenville" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-eco-green focus:border-eco-green">
-                                </div>
-                                <button type="button" class="w-full mt-2 bg-eco-green text-white px-6 py-3 rounded-full font-semibold hover:bg-eco-green-dark transition-all duration-300 shadow-md">Proceed to Payment</button>
-                            </form>
-                        </div>
-                        
-                        <div class="bg-white p-8 rounded-lg shadow-md border-2 border-transparent hover:border-eco-green transition-all">
-                             <div class="flex items-center mb-4">
-                                <i class="fas fa-hands-helping text-3xl text-eco-green mr-4"></i>
-                                <h3 class="text-2xl font-bold text-gray-800">In-Person Exchange</h3>
-                            </div>
-                            <p class="text-gray-600 mb-6">Meet the seller in a public place to exchange the item. Safe, fast, and no shipping fees.</p>
-                             <div class="bg-gray-100 p-4 rounded-md">
-                                <h4 class="font-semibold text-gray-800 mb-2">Suggested Meeting Points:</h4>
-                                <ul class="list-disc list-inside text-gray-600 space-y-1">
-                                    <li>City Central Library</li>
-                                    <li>Community Tech Hub</li>
-                                    <li>Local Police Station "Safe Zone"</li>
-                                </ul>
-                            </div>
-                            <button type="button" class="w-full mt-6 bg-gray-800 text-white px-6 py-3 rounded-full font-semibold hover:bg-gray-700 transition-all duration-300 shadow-md">Arrange Meetup</button>
-                        </div>
+                        <div class="bg-white p-8 rounded-lg shadow-md border-2 border-transparent hover:border-eco-green transition-all"><div class="flex items-center mb-4"><i class="fas fa-truck text-3xl text-eco-green mr-4"></i><h3 class="text-2xl font-bold text-gray-800">Courier Delivery</h3></div><p class="text-gray-600 mb-6">Have the item shipped directly to your address. Secure, tracked, and insured shipping.</p><form><div class="mb-4"><label for="address" class="block text-sm font-medium text-gray-700">Shipping Address</label><input type="text" id="address" placeholder="1234 Eco Drive" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-eco-green focus:border-eco-green"></div><div class="mb-4"><label for="city" class="block text-sm font-medium text-gray-700">City</label><input type="text" id="city" placeholder="Greenville" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-eco-green focus:border-eco-green"></div><button type="button" class="w-full mt-2 bg-eco-green text-white px-6 py-3 rounded-full font-semibold hover:bg-eco-green-dark transition-all duration-300 shadow-md">Proceed to Payment</button></form></div>
+                        <div class="bg-white p-8 rounded-lg shadow-md border-2 border-transparent hover:border-eco-green transition-all"><div class="flex items-center mb-4"><i class="fas fa-hands-helping text-3xl text-eco-green mr-4"></i><h3 class="text-2xl font-bold text-gray-800">In-Person Exchange</h3></div><p class="text-gray-600 mb-6">Meet the seller in a public place to exchange the item. Safe, fast, and no shipping fees.</p><div class="bg-gray-100 p-4 rounded-md"><h4 class="font-semibold text-gray-800 mb-2">Suggested Meeting Points:</h4><ul class="list-disc list-inside text-gray-600 space-y-1"><li>City Central Library</li><li>Community Tech Hub</li><li>Local Police Station "Safe Zone"</li></ul></div><button type="button" class="w-full mt-6 bg-gray-800 text-white px-6 py-3 rounded-full font-semibold hover:bg-gray-700 transition-all duration-300 shadow-md">Arrange Meetup</button></div>
                     </div>
                  </div>
             </div>
         </div>
 
+        <!-- Sell Page -->
         <div id="sell" class="page">
             <div class="container mx-auto px-6 py-12">
                 <div class="max-w-3xl mx-auto bg-white p-8 rounded-lg shadow-xl">
                     <h2 class="text-3xl font-bold text-gray-900 mb-6 text-center">List Your Device</h2>
                     <form id="sell-form">
-                        <div class="mb-4">
-                            <label for="product-name" class="block text-sm font-medium text-gray-700">Product Name</label>
-                            <input type="text" id="product-name" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-eco-green focus:border-eco-green" required>
-                        </div>
-                        <div class="mb-4">
-                            <label for="product-description" class="block text-sm font-medium text-gray-700">Description</label>
-                            <textarea id="product-description" rows="4" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-eco-green focus:border-eco-green" required></textarea>
-                        </div>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                            <div><label for="product-condition" class="block text-sm font-medium text-gray-700">Condition</label><select id="product-condition" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-eco-green focus:border-eco-green sm:text-sm rounded-md"><option>New</option><option>Used - Like New</option><option>Used - Good</option><option>Used - Fair</option><option>For Parts/Not Working</option></select></div>
-                            <div><label for="product-price" class="block text-sm font-medium text-gray-700">Price ($)</label><input type="number" id="product-price" placeholder="e.g., 299" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-eco-green focus:border-eco-green" required></div>
-                        </div>
+                        <div class="mb-4"><label for="product-name" class="block text-sm font-medium text-gray-700">Product Name</label><input type="text" id="product-name" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-eco-green focus:border-eco-green" required></div>
+                        <div class="mb-4"><label for="product-description" class="block text-sm font-medium text-gray-700">Description</label><textarea id="product-description" rows="4" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-eco-green focus:border-eco-green" required></textarea></div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4"><div><label for="product-condition" class="block text-sm font-medium text-gray-700">Condition</label><select id="product-condition" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-eco-green focus:border-eco-green sm:text-sm rounded-md"><option>New</option><option>Used - Like New</option><option>Used - Good</option><option>Used - Fair</option><option>For Parts/Not Working</option></select></div><div><label for="product-price" class="block text-sm font-medium text-gray-700">Price ($)</label><input type="number" id="product-price" placeholder="e.g., 299" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-eco-green focus:border-eco-green" required></div></div>
                         <div class="mb-6"><label class="block text-sm font-medium text-gray-700">Upload Photos</label><div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md"><div class="space-y-1 text-center"><svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true"><path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg><div class="flex text-sm text-gray-600"><label for="file-upload" class="relative cursor-pointer bg-white rounded-md font-medium text-eco-green hover:text-eco-green-dark focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-eco-green"><span>Upload a file</span><input id="file-upload" name="file-upload" type="file" class="sr-only"></label><p class="pl-1">or drag and drop</p></div><p class="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p></div></div></div>
                         <div class="text-center"><button type="submit" class="w-full bg-eco-green text-white px-8 py-3 rounded-full font-semibold hover:bg-eco-green-dark transition-all duration-300 shadow-lg transform hover:scale-105">List My Device</button></div>
                     </form>
@@ -208,6 +267,71 @@
             </div>
         </div>
         
+        <!-- Scrap Your Junk Page -->
+        <div id="scrap-junk" class="page">
+            <section class="scrap-hero-section text-center py-24 md:py-40 text-white">
+                <div class="container mx-auto px-6">
+                    <h2 class="text-4xl md:text-6xl font-bold leading-tight mb-4">Scrap Your Junk – Discover the Hidden Value in Your Devices</h2>
+                    <p class="text-lg md:text-xl text-gray-200 max-w-3xl mx-auto mb-8">Learn what makes your gadgets valuable even after they stop working. Help reduce e-waste while earning from the components inside!</p>
+                </div>
+            </section>
+
+            <section class="py-16 bg-gray-50">
+                <div class="container mx-auto px-6">
+                    <h2 class="text-3xl font-bold text-gray-900 mb-10 text-center">Explore Device Components</h2>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8" id="device-grid">
+                        <!-- Device tiles will be rendered here by JavaScript -->
+                    </div>
+                </div>
+            </section>
+
+            <section class="py-16 bg-white">
+                <div class="container mx-auto px-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+                        <div>
+                            <h3 class="text-3xl font-bold text-gray-900 mb-6">Why It Matters: Unlocking E-Waste Potential</h3>
+                            <p class="text-gray-600 mb-6">Knowing what's inside your old electronics is the first step towards responsible disposal and maximizing resource recovery. Every discarded device contains valuable materials that can be reused, recycled, or sold, preventing environmental harm and contributing to a circular economy.</p>
+                            <p class="text-eco-green font-semibold mb-4">Recycling Saves Resources:</p>
+                            <ul class="list-disc list-inside text-gray-700 space-y-2">
+                                <li><i class="fas fa-bolt text-eco-green mr-2"></i>Recycling 1 million laptops saves energy equivalent to powering 3,500 homes for a year.</li>
+                                <li><i class="fas fa-fire text-eco-green mr-2"></i>For every 1 million cell phones recycled, 35,000 lbs of copper, 772 lbs of silver, 75 lbs of gold, and 33 lbs of palladium can be recovered.</li>
+                                <li><i class="fas fa-water text-eco-green mr-2"></i>Manufacturing new electronics from recycled materials significantly reduces water and air pollution.</li>
+                            </ul>
+                        </div>
+                        <div class="text-center">
+                            <h3 class="text-3xl font-bold text-gray-900 mb-6">Our Vision: Recycle &#8594; Reuse &#8594; Renew</h3>
+                            <div class="flex flex-col items-center justify-center space-y-4">
+                                <i class="fas fa-recycle text-6xl text-eco-green"></i>
+                                <p class="text-xl font-semibold text-gray-800">Recycle</p>
+                                <i class="fas fa-arrow-down text-3xl text-gray-400"></i>
+                                <i class="fas fa-box-open text-6xl text-blue-500"></i>
+                                <p class="text-xl font-semibold text-gray-800">Reuse</p>
+                                <i class="fas fa-arrow-down text-3xl text-gray-400"></i>
+                                <i class="fas fa-seedling text-6xl text-green-700"></i>
+                                <p class="text-xl font-semibold text-gray-800">Renew</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- Component Modal for Scrap Your Junk -->
+        <div id="component-modal" class="modal-overlay">
+            <div class="modal-container">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 id="modal-device-title" class="text-2xl font-bold text-gray-900"></h3>
+                    <button id="modal-close-btn" class="text-gray-500 hover:text-gray-800 text-3xl">&times;</button>
+                </div>
+                <div id="modal-component-list">
+                    <!-- Components will be dynamically loaded here -->
+                </div>
+               <p class="mt-6 p-4 bg-red-100 text-green-700 font-bold text-center rounded-lg shadow-md">Note: If you'd like to sell or donate your components, please head over to the Sell or Donate section.</p>
+
+            </div>
+        </div>
+        
+        <!-- Articles / Knowledge Page -->
         <div id="articles" class="page">
              <div class="py-12 bg-white">
                 <div class="container mx-auto px-6">
@@ -216,7 +340,7 @@
                         <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mt-2">Share, Learn, Upgrade</h2>
                         <p class="text-gray-600 max-w-2xl mx-auto mt-4">Join our community to recycle and upgrade your electronics with shared knowledge and support.</p>
                     </div>
-                    <div class="mt-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div class="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8">
                         <div class="bg-gray-50 p-6 rounded-lg text-center"><i class="fas fa-recycle text-3xl text-eco-green mb-4"></i><h3 class="font-bold text-xl mb-2">Unlock the Secrets of DIY Electronics</h3><p class="text-gray-600">Explore our extensive resources on recycling techniques to give your electronics a new life.</p></div>
                         <div class="bg-gray-50 p-6 rounded-lg text-center"><i class="fas fa-tools text-3xl text-eco-green mb-4"></i><h3 class="font-bold text-xl mb-2">Step-by-Step Upgrade Guides</h3><p class="text-gray-600">Dive into our DIY tutorials and transform your gadgets with ease.</p></div>
                         <div class="bg-gray-50 p-6 rounded-lg text-center"><i class="fas fa-search text-3xl text-eco-green mb-4"></i><h3 class="font-bold text-xl mb-2">Troubleshooting Made Easy</h3><p class="text-gray-600">Find quick fixes and expert advice to tackle everyday electronic problems.</p></div>
@@ -225,90 +349,133 @@
                 <div class="container mx-auto px-6 py-12 mt-12">
                 <h2 class="text-3xl font-bold text-gray-900 mb-8 text-center">Upgrade and Recycle Electronics</h2>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    <div class="bg-white rounded-lg shadow-md overflow-hidden transform hover:-translate-y-2 transition-transform duration-300"><img src="https://images.pexels.com/photos/442150/pexels-photo-442150.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" class="w-full h-48 object-cover" alt="Upcycled old phones"><div class="p-6"><p class="text-sm text-gray-500 mb-2">DIY &middot; 5 min read</p><h3 class="text-xl font-bold mb-2">10 Creative Ways to Upcycle Your Old Smartphone</h3><p class="text-gray-600 mb-4">Turn it into a security camera, a smart home remote, and more!</p><a href="https://www.pcmag.com/how-to/12-creative-ways-to-repurpose-your-old-smartphone" target="_blank" rel="noopener noreferrer" class="text-eco-green font-semibold hover:underline">Read More &gt;</a></div></div>
-                    <div class="bg-white rounded-lg shadow-md overflow-hidden transform hover:-translate-y-2 transition-transform duration-300"><img src="https://images.pexels.com/photos/592753/pexels-photo-592753.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" class="w-full h-48 object-cover" alt="Person repairing a laptop"><div class="p-6"><p class="text-sm text-gray-500 mb-2">REPAIR GUIDE &middot; 8 min read</p><h3 class="text-xl font-bold mb-2">The Ultimate Guide to Laptop Battery Replacement</h3><p class="text-gray-600 mb-4">Breathe new life into your aging laptop with our step-by-step guide.</p><a href="https://www.theverge.com/23887515/laptop-battery-replacement-guide-hp-dell-macbook" target="_blank" rel="noopener noreferrer" class="text-eco-green font-semibold hover:underline">Read More &gt;</a></div></div>
-                    <div class="bg-white rounded-lg shadow-md overflow-hidden transform hover:-translate-y-2 transition-transform duration-300"><img src="https://images.pexels.com/photos/7988086/pexels-photo-7988086.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" class="w-full h-48 object-cover" alt="Pile of electronic waste"><div class="p-6"><p class="text-sm text-gray-500 mb-2">SUSTAINABILITY &middot; 4 min read</p><h3 class="text-xl font-bold mb-2">E-Waste: The Growing Problem and How You Can Help</h3><p class="text-gray-600 mb-4">Learn about the environmental impact of e-waste and what you can do.</p><a href="https://www.epa.gov/circulareconomy/electronics-donation-and-recycling" target="_blank" rel="noopener noreferrer" class="text-eco-green font-semibold hover:underline">Read More &gt;</a></div></div>
+                    <div class="bg-white rounded-lg shadow-md overflow-hidden transform hover:-translate-y-2 transition-transform duration-300"><img src="https://images.pexels.com/photos/442150/pexels-photo-442150.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" class="w-full h-48 object-cover" alt="Upcycled old phones"><div class="p-6"><p class="text-sm text-gray-500 mb-2">DIY &middot; 5 min read</p><h3 class="text-xl font-bold mb-2">10 Creative Ways to Upcycle Your Old Smartphone</h3><p class="text-gray-600 mb-4">Turn it into a security camera, a smart home remote, and more!</p><a href="https://www.pcmag.com/how-to/uses-for-your-old-smartphone" target="_blank" rel="noopener noreferrer" class="text-eco-green font-semibold hover:underline">Read More &gt;</a></div></div>
+                    <div class="bg-white rounded-lg shadow-md overflow-hidden transform hover:-translate-y-2 transition-transform duration-300"><img src="https://images.pexels.com/photos/592753/pexels-photo-592753.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" class="w-full h-48 object-cover" alt="Person repairing a laptop"><div class="p-6"><p class="text-sm text-gray-500 mb-2">REPAIR GUIDE &middot; 8 min read</p><h3 class="text-xl font-bold mb-2">The Ultimate Guide to Laptop Battery Replacement</h3><p class="text-gray-600 mb-4">Breathe new life into your aging laptop with our step-by-step guide.</p><a href="https://www.hp.com/us-en/shop/tech-takes/hp-laptop-battery-replacement" target="_blank" rel="noopener noreferrer" class="text-eco-green font-semibold hover:underline">Read More &gt;</a></div></div>
+                    <div class="bg-white rounded-lg shadow-md overflow-hidden transform hover:-translate-y-2 transition-transform duration-300"><img src="https://images.pexels.com/photos/7988086/pexels-photo-7988086.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" class="w-full h-48 object-cover" alt="Pile of electronic waste"><div class="p-6"><p class="text-sm text-gray-500 mb-2">SUSTAINABILITY &middot; 4 min read</p><h3 class="text-xl font-bold mb-2">E-Waste: The Growing Problem and How You Can Help</h3><p class="text-gray-600 mb-4">Learn about the environmental impact of e-waste and what you can do.</p><a href="https://news.climate.columbia.edu/2018/08/27/growing-e-waste-problem/" target="_blank" rel="noopener noreferrer" class="text-eco-green font-semibold hover:underline">Read More &gt;</a></div></div>
                 </div>
                </div>
              </div>
         </div>
-
+        
+        <!-- Community Page -->
         <div id="community" class="page">
             <div class="py-12 bg-white">
-                <div class="container mx-auto px-6">
-                    <div class="text-center">
-                        <p class="text-eco-green font-semibold">TOGETHER</p>
-                        <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mt-2">Join Our Community</h2>
-                        <p class="text-gray-600 max-w-2xl mx-auto mt-4">Connect with like-minded individuals and enhance your skills in recycling and upgrading electronics.</p>
-                    </div>
-                </div>
+                <div class="container mx-auto px-6"><div class="text-center"><p class="text-eco-green font-semibold">TOGETHER</p><h2 class="text-3xl md:text-4xl font-bold text-gray-900 mt-2">Join Our Community</h2><p class="text-gray-600 max-w-2xl mx-auto mt-4">Connect with like-minded individuals and enhance your skills in recycling and upgrading electronics.</p></div></div>
             </div>
             <div class="container mx-auto px-6 py-12">
-               <h2 class="text-3xl font-bold text-gray-900 mb-4 text-center">Meet Our Team</h2>
-               <p class="text-center text-gray-600 mb-12 max-w-2xl mx-auto">Meet the passionate individuals behind our community, dedicated to helping you and the planet.</p>
-               <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 text-center">
-                    <div class="bg-white p-6 rounded-lg shadow-md"><img class="w-24 h-24 rounded-full mx-auto mb-4" src="https://placehold.co/100x100/e2e8f0/adb5bd?text=A" alt="Alice"><h3 class="font-bold text-lg">Alice Johnson</h3><p class="text-sm text-eco-green">Community Manager</p></div>
-                    <div class="bg-white p-6 rounded-lg shadow-md"><img class="w-24 h-24 rounded-full mx-auto mb-4" src="https://placehold.co/100x100/e2e8f0/adb5bd?text=B" alt="Bob"><h3 class="font-bold text-lg">Bob Smith</h3><p class="text-sm text-eco-green">Tech Expert</p></div>
-                    <div class="bg-white p-6 rounded-lg shadow-md"><img class="w-24 h-24 rounded-full mx-auto mb-4" src="https://placehold.co/100x100/e2e8f0/adb5bd?text=C" alt="Cathy"><h3 class="font-bold text-lg">Cathy Lee</h3><p class="text-sm text-eco-green">Support Specialist</p></div>
-                    <div class="bg-white p-6 rounded-lg shadow-md"><img class="w-24 h-24 rounded-full mx-auto mb-4" src="https://placehold.co/100x100/e2e8f0/adb5bd?text=D" alt="David"><h3 class="font-bold text-lg">David Kim</h3><p class="text-sm text-eco-green">Content Creator</p></div>
-               </div>
+                <h2 class="text-3xl font-bold text-gray-900 mb-4 text-center">Meet Our Team</h2>
+                <p class="text-center text-gray-600 mb-12 max-w-2xl mx-auto">Meet the passionate individuals behind our community, dedicated to helping you and the planet.</p>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 text-center">
+                    <div class="bg-white p-6 rounded-lg shadow-md"><img class="w-24 h-24 rounded-full mx-auto mb-4 object-cover" src="https://i.postimg.cc/BbdPMXX8/steven.png" alt="Steven Tsai"><h3 class="font-bold text-lg">Steven Tsai</h3><a href="https://www.linkedin.com/in/hsuanyutsai/" target="_blank" rel="noopener noreferrer" class="text-sm text-eco-green hover:underline">LinkedIn Profile <i class="fas fa-external-link-alt text-xs ml-1"></i></a></div>
+                    <div class="bg-white p-6 rounded-lg shadow-md"><img class="w-24 h-24 rounded-full mx-auto mb-4" src="https://i.postimg.cc/g2pHWT2x/pic1.jpg" alt="Chris George"><h3 class="font-bold text-lg">Chris George</h3><a href="https://www.linkedin.com/in/chrisgeorge1810/" target="_blank" rel="noopener noreferrer" class="text-sm text-eco-green hover:underline">LinkedIn Profile <i class="fas fa-external-link-alt text-xs ml-1"></i></a></div>
+                    <div class="bg-white p-6 rounded-lg shadow-md"><img class="w-24 h-24 rounded-full mx-auto mb-4" src="https://i.postimg.cc/8PmM6JTm/image.jpg" alt="Parul Garg"><h3 class="font-bold text-lg">Parul Garg</h3><a href="https://www.linkedin.com/in/parul-garg-b0211271/" target="_blank" rel="noopener noreferrer" class="text-sm text-eco-green hover:underline">LinkedIn Profile <i class="fas fa-external-link-alt text-xs ml-1"></i></a></div>
+                    <div class="bg-white p-6 rounded-lg shadow-md"><img class="w-24 h-24 rounded-full mx-auto mb-4" src="https://i.postimg.cc/hjYjV4sK/IMG.jpg" alt="Safwaan Fatkare"><h3 class="font-bold text-lg">Safwaan Fatkare</h3><a href="https://www.linkedin.com/in/safwaan-fatkare-53269a269/" target="_blank" rel="noopener noreferrer" class="text-sm text-eco-green hover:underline">LinkedIn Profile <i class="fas fa-external-link-alt text-xs ml-1"></i></a></div>
+                </div>
             </div>
-            <div class="py-12 bg-gray-100">
+            <!-- Moved Footer Sections to Community Page -->
+             <div class="py-12 bg-gray-100">
                 <div class="container mx-auto px-6">
                     <h2 class="text-3xl font-bold text-gray-900 mb-8 text-center">Frequently Asked Questions</h2>
                     <div class="max-w-3xl mx-auto space-y-4" id="faq-container">
                         <div class="faq-item bg-white p-4 rounded-lg shadow-sm"><div class="faq-question flex justify-between items-center cursor-pointer"><h3 class="font-semibold text-lg">How do I join the community?</h3><i class="fas fa-chevron-down faq-icon transition-transform"></i></div><div class="faq-answer mt-2 text-gray-600 border-t pt-2"><p>Joining is easy! Simply create an account on our platform and start engaging with other members. You'll gain access to discussions, resources, and support.</p></div></div>
                         <div class="faq-item bg-white p-4 rounded-lg shadow-sm"><div class="faq-question flex justify-between items-center cursor-pointer"><h3 class="font-semibold text-lg">Can I ask for help with repairs?</h3><i class="fas fa-chevron-down faq-icon transition-transform"></i></div><div class="faq-answer mt-2 text-gray-600 border-t pt-2"><p>Absolutely! Our community thrives on questions. Feel free to post any inquiries you have about repairs, upgrades, or recycling, and our members will be eager to help you find answers.</p></div></div>
-                        <div class="faq-item bg-white p-4 rounded-lg shadow-sm"><div class="faq-question flex justify-between items-center cursor-pointer"><h3 class="font-semibold text-lg">How do I engage with others?</h3><i class="fas fa-chevron-down faq-icon transition-transform"></i></div><div class="faq-answer mt-2 text-gray-600 border-t pt-2"><p>Engagement is key! Participate in discussions, provide feedback, and share your experiences. The more you interact, the richer your community experience will be.</p></div></div>
+                        <div class="faq-item bg-white p-4 rounded-lg shadow-sm"><div class="faq-question flex justify-between items-center cursor-pointer"><h3 class="font-semibold text-lg">How do I engage with others?</h3><i class="fas fa-chevron-down faq-icon transition-transform"></i></i></div><div class="faq-answer mt-2 text-gray-600 border-t pt-2"><p>Engagement is key! Participate in discussions, provide feedback, and share your experiences. The more you interact, the richer your community experience will be.</p></div></div>
                     </div>
                 </div>
             </div>
+            <div class="py-12 bg-gray-100">
+                <div class="container mx-auto px-6 grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-8">
+                    <div>
+                        <h5 class="font-bold mb-4">Helpful Links</h5>
+                        <ul class="space-y-2 text-gray-600">
+                            <li class="hover:text-eco-green"><a href="#community">Contact Us</a></li>
+                            <li class="hover:text-eco-green"><a href="#community">About Us</a></li>
+                            <li class="hover:text-eco-green"><a href="#community">FAQs</a></li>
+                            <li class="hover:text-eco-green">
+    <a href="https://chat.whatsapp.com/FJOcYJHXy9tBU1qTmMNl1U" target="_blank" rel="noopener noreferrer">Support</a>
+</li>
+
+                        </ul>
+                    </div>
+                    <div>
+                        <h5 class="font-bold mb-4">Resources</h5>
+                        <ul class="space-y-2 text-gray-600">
+                            <li class="hover:text-eco-green"><a href="#community">Blog</a></li>
+                            <li class="hover:text-eco-green"><a href="#community">Careers</a></li>
+                            <li class="hover:text-eco-green"><a href="#community">Privacy Policy</a></li>
+                            <li class="hover:text-eco-green"><a href="#community">Terms of Service</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h5 class="font-bold mb-4">Get In Touch</h5>
+                        <ul class="space-y-2 text-gray-600">
+                            <li class="hover:text-eco-green"><a href="#community">Email Us</a></li>
+                            <li class="hover:text-eco-green"><a href="#community">Live Chat</a></li>
+                            <li class="hover:text-eco-green"><a href="#community">Phone Support</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h5 class="font-bold mb-4">Connect</h5>
+                        <ul class="space-y-2 text-gray-600">
+                            <li class="hover:text-eco-green"><a href="#community">Community Forum</a></li>
+                            <li class="hover:text-eco-green"><a href="#community">Share Your Story</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
         </div>
     </main>
 
     <footer class="bg-gray-800 text-white pt-16 pb-8">
         <div class="container mx-auto px-6">
-            <div class="grid grid-cols-2 md:grid-cols-6 gap-8 mb-8">
-                <div class="col-span-2 md:col-span-2">
-                    <h4 class="font-semibold mb-4">Subscribe to updates</h4>
-                    <p class="text-gray-400 mb-4">Stay informed about our latest products and offers.</p>
-                     <form class="flex"><input type="email" placeholder="Your email here" class="bg-gray-700 text-white px-4 py-2 rounded-l-md focus:outline-none focus:ring-2 focus:ring-eco-green w-full"><button class="bg-eco-green text-white px-4 py-2 rounded-r-md hover:bg-eco-green-dark transition-colors">Join</button></form>
+            <div class="text-center mb-12">
+                <h4 class="font-semibold mb-4 text-lg">Proudly Supported By</h4>
+                <div class="flex justify-center items-center gap-8 flex-wrap">
+                    <a href="https://www.aurubis.com/en/products/recycling-at-aurubis" target="_blank" rel="noopener noreferrer" class="supporter-logo">
+                        <img src="data:image/png;base64,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" alt="Aurubis Logo" class="h-12">
+                    </a>
+                    <a href="https://ewastesolutionsusa.com/electronics-recycling-boston/" target="_blank" rel="noopener noreferrer" class="supporter-logo">
+                         <img src="data:image/png;base64,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" alt="E-Waste Solutions USA Logo" class="h-16">
+                    </a>
+                    <a href="https://www.tempestns.com/network-asset-disposition-itad-e-waste-solutions/" target="_blank" rel="noopener noreferrer" class="supporter-logo">
+                        <img src="https://daspedia.com/wp-content/uploads/2019/02/Tempest-New-500x120.png" alt="Tempest NS Logo" class="h-10">
+                    </a>
                 </div>
-                <div><h5 class="font-bold mb-4">Helpful Links</h5><ul class="space-y-2 text-gray-400"><li class="hover:text-white"><a href="#">Contact Us</a></li><li class="hover:text-white"><a href="#">About Us</a></li><li class="hover:text-white"><a href="#">FAQs</a></li><li class="hover:text-white"><a href="#">Support Center</a></li></ul></div>
-                <div><h5 class="font-bold mb-4">Resources</h5><ul class="space-y-2 text-gray-400"><li class="hover:text-white"><a href="#">Blog</a></li><li class="hover:text-white"><a href="#">Careers</a></li><li class="hover:text-white"><a href="#">Privacy Policy</a></li><li class="hover:text-white"><a href="#">Terms of Service</a></li></ul></div>
-                <div><h5 class="font-bold mb-4">Get In Touch</h5><ul class="space-y-2 text-gray-400"><li class="hover:text-white"><a href="#">Email Us</a></li><li class="hover:text-white"><a href="#">Live Chat</a></li><li class="hover:text-white"><a href="#">Phone Support</a></li><li class="hover:text-white"><a href="#">Help Center</a></li></ul></div>
-                <div><h5 class="font-bold mb-4">Connect</h5><ul class="space-y-2 text-gray-400"><li class="hover:text-white"><a href="#">Community Forum</a></li><li class="hover:text-white"><a href="#">Share Your Story</a></li><li class="hover:text-white"><a href="#">Get Support</a></li><li class="hover:text-white"><a href="#">Explore More</a></li></ul></div>
+            </div>
+            <!-- Moved sections are no longer here -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+                <div class="col-span-1 md:col-span-1"><h4 class="font-semibold mb-4">Subscribe to updates</h4><p class="text-gray-400 mb-4">Stay informed about our latest products and offers.</p><form class="flex"><input type="email" placeholder="Your email here" class="bg-gray-700 text-white px-4 py-2 rounded-l-md focus:outline-none focus:ring-2 focus:ring-eco-green w-full"><button class="bg-eco-green text-white px-4 py-2 rounded-r-md hover:bg-eco-green-dark transition-colors">Join</button></form></div>
+                 <div class="col-span-1 md:col-span-1">
+                    <h5 class="font-bold mb-4">Social Media</h5>
+                    <div class="flex space-x-6">
+                        <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-facebook-f text-2xl"></i></a>
+                        <a href="https://x.com/elonmusk" target="_blank" rel="noopener noreferrer" class="text-gray-400 hover:text-white"><i class="fab fa-twitter text-2xl"></i></a>
+                        <a href="https://www.instagram.com/" target="_blank" rel="noopener noreferrer" class="text-gray-400 hover:text-white"><i class="fab fa-instagram text-2xl"></i></a>
+                        <a href="https://www.linkedin.com/" target="_blank" rel="noopener noreferrer" class="text-gray-400 hover:text-white"><i class="fab fa-linkedin-in text-2xl"></i></a>
+
+                    </div>
+                </div>
             </div>
             <div class="border-t border-gray-700 pt-8 flex flex-col sm:flex-row justify-between items-center">
                 <p class="text-gray-500 text-sm">&copy; 2025 Re-Tech. All rights reserved.</p>
-                <div class="flex space-x-6 mt-4 sm:mt-0"><a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-facebook-f"></i></a><a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-twitter"></i></a><a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-instagram"></i></a><a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-linkedin-in"></i></a></div>
+                <!-- Social media icons moved to a dedicated section above -->
+                <div class="hidden sm:flex space-x-6 mt-4 sm:mt-0"></div>
             </div>
         </div>
     </footer>
-
-    <div id="integrity-modal" class="modal-overlay">
-        <div class="modal-container">
-            <h3 class="text-xl font-bold mb-4">Seller Integrity Agreement</h3>
-            <p class="text-gray-600 mb-4">To maintain a safe and trustworthy marketplace for everyone, you must agree to the following terms:</p>
-            <ul class="list-disc list-inside text-gray-600 space-y-2 mb-6">
-                <li>I will post only genuine, functional products unless clearly marked as "For Parts/Not Working".</li>
-                <li>I will describe my items accurately and honestly.</li>
-                <li>I will not engage in any form of scamming or fraudulent activity.</li>
-            </ul>
-            <div class="flex items-center mb-6">
-                <input id="integrity-checkbox" type="checkbox" class="h-4 w-4 text-eco-green focus:ring-eco-green border-gray-300 rounded">
-                <label for="integrity-checkbox" class="ml-2 block text-sm text-gray-900">I have read and agree to these terms.</label>
-            </div>
-            <div class="flex justify-end space-x-4">
-                <button id="modal-cancel-btn" class="px-6 py-2 bg-gray-200 text-gray-800 rounded-full hover:bg-gray-300">Cancel</button>
-                <button id="modal-confirm-btn" class="px-6 py-2 bg-eco-green text-white rounded-full hover:bg-eco-green-dark disabled:bg-gray-400" disabled>Confirm & List Item</button>
-            </div>
-        </div>
+    
+<div id="integrity-modal" class="modal-overlay">
+    <div class="modal-container">
+        <h3 class="text-xl font-bold mb-4">Seller Integrity Agreement</h3>
+        <p class="text-gray-600 mb-4">To maintain a safe and trustworthy marketplace, you must agree to describe your items accurately and honestly.</p>
+        <div class="flex items-center mb-6"><input id="integrity-checkbox" type="checkbox" class="h-4 w-4 text-eco-green focus:ring-eco-green border-gray-300 rounded"><label for="integrity-checkbox" class="ml-2 block text-sm text-gray-900">I have read and agree.</label></div>
+        <div class="flex justify-end space-x-4"><button id="modal-cancel-btn" class="px-6 py-2 bg-gray-200 text-gray-800 rounded-full hover:bg-gray-300">Cancel</button><button id="modal-confirm-btn" class="px-6 py-2 bg-eco-green text-white rounded-full hover:bg-eco-green-dark disabled:bg-gray-400" disabled>Confirm & List Item</button></div>
     </div>
-
+</div>
 
 <script>
-    // --- Basic Page Navigation ---
+    // --- Page Navigation ---
     const navLinks = document.querySelectorAll('.nav-link');
     const pages = document.querySelectorAll('.page');
 
@@ -316,19 +483,10 @@
         pages.forEach(page => page.classList.remove('active'));
         const targetPage = document.getElementById(pageId);
         if(targetPage) targetPage.classList.add('active');
-        
-        if (stateAction === 'push') {
-             window.history.pushState({page: pageId}, pageId, `#${pageId}`);
-        }
-
-        // Update active class on nav links
+        if (stateAction === 'push') window.history.pushState({page: pageId}, pageId, `#${pageId}`);
         navLinks.forEach(link => {
-            const linkPageId = link.getAttribute('href').substring(1);
-            if(linkPageId === pageId) {
-                link.classList.add('text-eco-green', 'font-semibold');
-            } else {
-                link.classList.remove('text-eco-green', 'font-semibold');
-            }
+            link.classList.toggle('text-eco-green', link.getAttribute('href') === `#${pageId}`);
+            link.classList.toggle('font-semibold', link.getAttribute('href') === `#${pageId}`);
         });
         window.scrollTo(0, 0);
     }
@@ -336,27 +494,13 @@
     navLinks.forEach(link => {
         link.addEventListener('click', (e) => {
             const pageId = link.getAttribute('href').substring(1);
-            if(document.getElementById(pageId)) {
-                e.preventDefault();
-                showPage(pageId);
-            }
+            if(document.getElementById(pageId)) { e.preventDefault(); showPage(pageId); }
         });
     });
+    window.addEventListener('popstate', e => { showPage(e.state?.page || 'home', 'replace'); });
+    showPage(window.location.hash.substring(1) || 'home', 'replace');
 
-    // Handle browser back/forward
-    window.addEventListener('popstate', e => {
-        if(e.state && e.state.page) {
-            showPage(e.state.page, 'replace'); // Use 'replace' to not create new history entries
-        } else {
-            showPage('home', 'replace');
-        }
-    });
-
-    // Show initial page based on URL hash or default to home
-    const initialPage = window.location.hash.substring(1) || 'home';
-    showPage(initialPage, 'replace');
-
-    // --- Product Filtering and Sorting Logic ---
+    // --- Product Filtering ---
     const productGrid = document.getElementById('product-grid');
     const deviceTypeFilter = document.getElementById('device-type');
     const priceRange = document.getElementById('price-range');
@@ -364,46 +508,23 @@
     const distanceRange = document.getElementById('distance-range');
     const distanceValue = document.getElementById('distance-value');
     const sortBy = document.getElementById('sort-by');
-
-    const products = [
-        { name: 'Smartphone X', type: 'Smartphone', price: 299, distance: 50, image: 'https://images.pexels.com/photos/1786433/pexels-photo-1786433.jpeg?auto=compress&cs=tinysrgb&w=600' },
-        { name: 'Laptop Pro', type: 'Laptop', price: 1199, distance: 120, image: 'https://images.pexels.com/photos/205421/pexels-photo-205421.jpeg?auto=compress&cs=tinysrgb&w=600' },
-        { name: 'Tablet Mini', type: 'Tablet', price: 199, distance: 25, image: 'https://images.pexels.com/photos/221185/pexels-photo-221185.jpeg?auto=compress&cs=tinysrgb&w=600' },
-        { name: 'Headphones Plus', type: 'Headphones', price: 89, distance: 15, image: 'https://images.pexels.com/photos/1649771/pexels-photo-1649771.jpeg?auto=compress&cs=tinysrgb&w=600' },
-        { name: 'Apple Watch', type: 'Smartwatch', price: 250, distance: 80, image: 'https://images.pexels.com/photos/437037/pexels-photo-437037.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1' },
-        { name: 'Camera Pro', type: 'Camera', price: 550, distance: 250, image: 'https://images.pexels.com/photos/51383/photo-camera-subject-photographer-51383.jpeg?auto=compress&cs=tinysrgb&w=600' },
-        { name: 'Lenovo Gaming Laptop', type: 'Laptop', price: 1899, distance: 300, image: 'https://images.pexels.com/photos/1779487/pexels-photo-1779487.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1' },
-        { name: 'Kindle Paperwhite', type: 'Tablet', price: 120, distance: 45, image: 'https://images.pexels.com/photos/4158/apple-iphone-books-macbook.jpg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1' },
-    ];
+    const products = [{ name: 'Smartphone X', type: 'Smartphone', price: 299, distance: 50, image: 'https://images.pexels.com/photos/1786433/pexels-photo-1786433.jpeg?auto=compress&cs=tinysrgb&w=600' },{ name: 'Laptop Pro', type: 'Laptop', price: 1199, distance: 120, image: 'https://images.pexels.com/photos/205421/pexels-photo-205421.jpeg?auto=compress&cs=tinysrgb&w=600' },{ name: 'Tablet Mini', type: 'Tablet', price: 199, distance: 25, image: 'https://images.pexels.com/photos/221185/pexels-photo-221185.jpeg?auto=compress&cs=tinysrgb&w=600' },{ name: 'Headphones Plus', type: 'Headphones', price: 89, distance: 15, image: 'https://images.pexels.com/photos/1649771/pexels-photo-1649771.jpeg?auto=compress&cs=tinysrgb&w=600' },{ name: 'Apple Watch', type: 'Smartwatch', price: 250, distance: 80, image: 'https://images.pexels.com/photos/437037/pexels-photo-437037.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1' },{ name: 'Camera Pro', type: 'Camera', price: 550, distance: 250, image: 'https://images.pexels.com/photos/51383/photo-camera-subject-photographer-51383.jpeg?auto=compress&cs=tinysrgb&w=600' },{ name: 'Lenovo Gaming Laptop', type: 'Laptop', price: 1899, distance: 300, image: 'https://images.pexels.com/photos/1779487/pexels-photo-1779487.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1' },{ name: 'Kindle Paperwhite', type: 'Tablet', price: 120, distance: 45, image: 'data:image/jpeg;base64,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' }];
 
     function renderProducts(filteredProducts) {
         if (!productGrid) return;
         productGrid.innerHTML = '';
-        if (filteredProducts.length === 0) {
-            productGrid.innerHTML = `<p class="text-gray-500 col-span-full text-center">No products match your criteria.</p>`;
-            return;
-        }
+        if (filteredProducts.length === 0) { productGrid.innerHTML = `<p class="text-gray-500 col-span-full text-center">No products match your criteria.</p>`; return; }
         filteredProducts.forEach(product => {
             const productCard = document.createElement('div');
             productCard.className = "bg-white rounded-lg shadow-md overflow-hidden transform hover:-translate-y-2 transition-transform duration-300";
             productCard.innerHTML = `<img src="${product.image}" class="w-full h-48 object-cover" alt="${product.name}"><div class="p-6"><h3 class="text-xl font-bold mb-2">${product.name}</h3><p class="text-gray-500 text-sm mb-2">${product.type}</p><div class="flex justify-between items-center"><p class="text-lg font-semibold text-eco-green">$${product.price}</p><p class="text-sm text-gray-500">${product.distance} km away</p></div><button class="buy-now-btn w-full mt-4 bg-eco-green text-white px-4 py-2 rounded-full hover:bg-eco-green-dark transition-colors">Buy Now</button></div>`;
             productGrid.appendChild(productCard);
         });
-        
-        // Add event listeners to new buttons
-        document.querySelectorAll('.buy-now-btn').forEach(button => {
-            button.addEventListener('click', () => {
-                showPage('delivery');
-            });
-        });
+        document.querySelectorAll('.buy-now-btn').forEach(button => button.addEventListener('click', () => showPage('delivery')));
     }
-
     function filterAndSortProducts() {
         let tempProducts = [...products];
-        if(deviceTypeFilter) {
-            const type = deviceTypeFilter.value;
-            if (type !== 'All') tempProducts = tempProducts.filter(p => p.type === type);
-        }
+        if(deviceTypeFilter) { if (deviceTypeFilter.value !== 'All') tempProducts = tempProducts.filter(p => p.type === deviceTypeFilter.value); }
         if(priceRange) tempProducts = tempProducts.filter(p => p.price <= parseInt(priceRange.value));
         if(distanceRange) tempProducts = tempProducts.filter(p => p.distance <= parseInt(distanceRange.value));
         if(sortBy) {
@@ -414,28 +535,49 @@
         }
         renderProducts(tempProducts);
     }
-    
     if(document.getElementById('products')) {
-        deviceTypeFilter.addEventListener('change', filterAndSortProducts);
-        sortBy.addEventListener('change', filterAndSortProducts);
+        [deviceTypeFilter, sortBy].forEach(el => el.addEventListener('change', filterAndSortProducts));
         priceRange.addEventListener('input', () => { priceValue.textContent = priceRange.value; filterAndSortProducts(); });
         distanceRange.addEventListener('input', () => { distanceValue.textContent = distanceRange.value; filterAndSortProducts(); });
         filterAndSortProducts();
     }
 
-    // --- FAQ Accordion ---
-    const faqContainer = document.getElementById('faq-container');
-    if (faqContainer) {
-        faqContainer.addEventListener('click', function(e) {
-            const question = e.target.closest('.faq-question');
-            if (question) {
-                const faqItem = question.parentElement;
-                faqItem.classList.toggle('active');
+    // --- Animations and Interactions ---
+    const animatedCounters = document.querySelectorAll('[data-target]');
+    const fadeInSections = document.querySelectorAll('.fade-in-section');
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('is-visible');
+                // Animate counter if it's a counter
+                const counter = entry.target.querySelector('[data-target]');
+                if (counter && !counter.classList.contains('animated')) {
+                     animateCounter(counter);
+                }
             }
         });
+    }, { threshold: 0.1 });
+    
+    fadeInSections.forEach(section => observer.observe(section));
+
+    function animateCounter(counter) {
+        counter.classList.add('animated');
+        const target = +counter.getAttribute('data-target');
+        let count = 0;
+        const updateCount = () => {
+            const increment = target / 100;
+            if (count < target) {
+                count += increment;
+                counter.innerText = Math.ceil(count);
+                setTimeout(updateCount, 20);
+            } else {
+                counter.innerText = target.toLocaleString();
+            }
+        };
+        updateCount();
     }
 
-    // --- Sell Page Modal Logic ---
+    // --- Modal Logic (Sell Page) ---
     const sellForm = document.getElementById('sell-form');
     const modal = document.getElementById('integrity-modal');
     const integrityCheckbox = document.getElementById('integrity-checkbox');
@@ -443,27 +585,302 @@
     const cancelBtn = document.getElementById('modal-cancel-btn');
 
     if(sellForm && modal) {
-        sellForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            modal.style.display = 'flex';
-        });
-
-        integrityCheckbox.addEventListener('change', function() {
-            confirmBtn.disabled = !this.checked;
-        });
-
-        cancelBtn.addEventListener('click', function() {
-            modal.style.display = 'none';
-        });
-
-        confirmBtn.addEventListener('click', function() {
-            alert('Your item has been listed successfully!');
+        sellForm.addEventListener('submit', (e) => { e.preventDefault(); modal.style.display = 'flex'; });
+        integrityCheckbox.addEventListener('change', () => { confirmBtn.disabled = !integrityCheckbox.checked; });
+        cancelBtn.addEventListener('click', () => { modal.style.display = 'none'; });
+        confirmBtn.addEventListener('click', () => {
+            // Replaced alert with custom message handling
+            displayMessage('Your item has been listed successfully!', 'success');
             modal.style.display = 'none';
             sellForm.reset();
             integrityCheckbox.checked = false;
             confirmBtn.disabled = true;
         });
     }
+
+    // --- Donation Form Logic ---
+    const donationForm = document.getElementById('donation-form');
+    if(donationForm) {
+        donationForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            // Replaced alert with custom message handling
+            displayMessage('Thank you for your generous donation! We will be in touch via email shortly.', 'success');
+            donationForm.reset();
+        });
+    }
+    // Fix for "Scroll down to Donate" button
+    const donateScrollButton = document.getElementById('donate-scroll-button');
+    if (donateScrollButton) {
+        donateScrollButton.addEventListener('click', (e) => {
+            e.preventDefault(); // Prevent default hash behavior
+            const targetId = e.target.getAttribute('href').substring(1);
+            const targetElement = document.getElementById(targetId);
+            if (targetElement) {
+                targetElement.scrollIntoView({ behavior: 'smooth' });
+            }
+        });
+    }
+
+    // --- Custom Message Box for Alerts ---
+    function displayMessage(message, type = 'info') {
+        let messageBox = document.getElementById('custom-message-box');
+        if (!messageBox) {
+            messageBox = document.createElement('div');
+            messageBox.id = 'custom-message-box';
+            messageBox.className = 'fixed bottom-5 right-5 p-4 rounded-lg shadow-xl text-white z-[1001] opacity-0 transition-opacity duration-300';
+            document.body.appendChild(messageBox);
+        }
+
+        messageBox.textContent = message;
+        messageBox.className = messageBox.className.replace(/bg-(green|blue|red)-\d+/, ''); // Remove previous color
+        if (type === 'success') {
+            messageBox.classList.add('bg-green-600');
+        } else if (type === 'error') {
+            messageBox.classList.add('bg-red-600');
+        } else {
+            messageBox.classList.add('bg-blue-600');
+        }
+        
+        messageBox.classList.remove('opacity-0');
+        messageBox.classList.add('opacity-100');
+
+        setTimeout(() => {
+            messageBox.classList.remove('opacity-100');
+            messageBox.classList.add('opacity-0');
+        }, 3000); // Message disappears after 3 seconds
+    }
+
+
+    // --- FAQ Accordion ---
+    const faqContainer = document.getElementById('faq-container');
+    if (faqContainer) faqContainer.addEventListener('click', (e) => {
+        const question = e.target.closest('.faq-question');
+        if (question) question.parentElement.classList.toggle('active');
+    });
+
+    // --- Scrap Your Junk Page Logic ---
+    const deviceGrid = document.getElementById('device-grid');
+    const componentModal = document.getElementById('component-modal');
+    const modalDeviceTitle = document.getElementById('modal-device-title');
+    const modalComponentList = document.getElementById('modal-component-list');
+    const modalCloseBtn = document.getElementById('modal-close-btn');
+
+    const devicesData = [
+        {
+            name: "Smartphone",
+            image: "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAkGBw0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ8NDQ0NFREWFhURFRUYHTQhGBolGxUVITEhJSk3Li4uFyAzODM4QyguLjcBCgoKDg0OGhAPFy0dHR0tKystKy0rLS8tLS0tLystLS0uLSstLS0tKy0tKy03LS0rLS0tLS0tLSsrKy0tKy0tK//AABEIAKgBLAMBEQACEQEDEQH/xAAbAAEBAAMBAQEAAAAAAAAAAAACAwEEBQYAB//EAEcQAAICAQIBBggJBg8AAAAAAAABAgMEBREhEjEyQVG0BgcTNVNhc5EiNHFydaGks9EkJWKBksEUFTNDUlWEhZOUlaKx0vD/xAAaAQEBAAMBAQAAAAAAAAAAAAAAAQIEBQMG/8QAMxEBAAICAAUBBgMHBQAAAAAAAAECAxEEEiExcTMFEzJBYcFRkbEGFCIjNKHRUlNyouH/2gAMAwEAAhEDEQA/AP0Bs9XkDYAbAEmUSkwJyYRGTAjJgSkwIyZRGbAjJgSkwJSYEpMCUmBOTAm2AWAWwPgCBgDKAyBkDIGQEBlAJAJAJAJIBJANIBpAJID3bZioNgBsoEmBKTCJyYEZMCUmBGTAlJlEZMCMmBGbAjOQEnIIxGuUujGT+RNlOr54tvorP2JE3C6kHiXeis/YkNwalBxfYNx+JqShj2S6MJS25+TFvb3DcGpJYd3orP2JDcGpN4NvN5Kzfs5DG4NT+DWlBoDAGUBkDIGUBlAJAJAJAJAJANAJANANID2zZioNlAbAnJgTkwiUmBKTAlJgRkyiUmBGTAjNgQmwNW2QFaUoVW5E4+UVSgoVb7eWvsmq6q9+pOUlu+xMxyXilZtPyWlea2lnoVNi5WX+V2vZy8pv5GL7K6t+TCK+TftbPkc/tLPktutuWPo7uLhMdY6xuUl4M4EntHCx/wDDjwPL98zR3vP5tj3OGI3NY/JnP8GsSrGvnRgY12RGqcqoSpi1KaXBbdf7zLFxmW+SsXyTFd9erWy0pqeWkfk/N+VqP9U1f6Sv+p34jD/u/wDb/wBc/wDj/wBH9noPA7CsyLbY52l48Ko18pWTwY0NWcpbRXD4W639x55rVrEcl5mfO2zw1ZtbV6Rrw7+XoOCubDxl8lMPwMsV7T3l1sXDYp70j8nAzNKxU+GPUvmwSfvR1MVYnu6WPgeHtHXHH5NnQeW7njSnKanVZZQ5ycpqVceVKvd8WuQpNfNZnavJP0l857Y9nV4a0Xx/DP8AZuy4MjhsoKygMgJAZQCQCQCQCQCQDQDQDSAWwHsmyKDYAbAnJhE5MCUmBKTAlJlEZMCUmBGTAjNgQmwNWx8Qjbt+KL6R0rvBq8f/AE9/E/o2OF9WPLsSPiYfQw2qq+THbrfF/KeU23LwtbcsmdUfNm3jELjexvSrlZvWdLDDewvN53OdjDDrYWfBrznhf23uN56Z+0eXJ/aH+nr5+0tnJ4SZ5y+MgYsiqIDKASASAygEgGgEgGgEgGgGgHsB61sig2ETkwJyYE5MCUmBKTKJyYEZMCUmBGTAlNgQmwNWb4lRuXfE19I6V3lGpx3oX8T+jY4X1Y8u0z4h9A3ZHhDWgT2qyYZt4xr2nQxQ9auVnPgzp4Ib2F5zN5zs4Y6Ori7F4Nec8H5czuN5nxEfwx5cj9oPQr5+0tjN6TPCXxsJ1kVVANAZQCQCQCQCQDQDQCQDQDQDQHqGyANgTlIASYEpMCcmUSkwJSYEpMCUmBKTAjJgRmwNWb4lRu2/E19IaV3lGrx3oX8T+jY4X1I8w7R8Rp9A2aLN1t1r60eVq6nbxvXU7NmVWIs3caw17mdLFD1o4+fLnOtw9XQww87ly4naw16Opjjot4Nec8H52X3K8nF/DHlx/wBoPQr5+0r53SZqy+NhOBFWiAkAkAkAkAkAkA0A0AkA0A0A9gPRtkAbAm2AJMCUmBOTKJyYEpMCUmBKTAlJgSkwIzYGrN8So3bPif8AeGk96ia3G+jbxP6Pfh/UjzD0EapS6MW/kR8dXFae0O7N4jvLEoTg03FrbtXAlsUx0tDKLVtGttmMlJJrrPGK6l4zGp0MjcxQyhp5EjqYavekOFqFnOdvh6Olgq4N0t2dfHXUOjXs2/BrzngfPyu53njxnwx5cX2/6FfP2lsZ3SZqS+NhOsiqoBoDKASASAaASAaAaAaAaAaASA7zkQBsCcpACTAnJlE5MCUmBKTAnJgSkwJSYE5MCM2BqWPiEdKC3xoJ8z1HSE/83A8uIjdJifq9cM6s9yoJcFwS6jl+61HRu8wyjvwfFdnUYWxsolzL4eRnv/Nz/wBsjn5+F11hu0t7yv1gbGYYqrVzsyzZM7HD0beKHnNQt5zvcPjdTDVypM6Natxv+DPnPT/aZPc7zV46NUjy4ft70K/8vtLZz+kzSl8dCUCKqgGgEgEgEgGgEgGgGgGgGgGgGkB12yAuQE2ygNgTkwJyYE5MCUmBOTAlJgTkwJSYEpsDUsfEI6lHxeH0jpHfIGGXszx93vWjV5WzzBIxmjOLNbJrU4uL5n9XrMJxxMae2O81ncOJG5xlKmfSj0f0omrbh+WdujqJjnjtLnZ9vOdHhsbbww85l2bs72GnR1cfSGrubkVeky6Hg0/znp/tcjul5pe0I/l18uJ7cn+RXz9pbWd0mc6XyEJQIqqASAaASASASAaAaASAogGgGgEgOm5EAbALZRNsASYEpMCcmBOTAnJgTkwJyYEpMCU2BqWPiEdSh/k8fpDSe+QMcnyZ0e+cjDlZcyM5k5WUWa1tpOR7Us4Wu1ucfKV/ytfGP6S60etccT0l0uGy8s6ntLzk9Thaufkz64v9x648E0n6Opj6S5d0uJ1cXZ0a26IysSNusbY2yxDf8FZ76rp/tb+63Gl7TjWKvn7S4ntfJNsUeftLo53SZypfMQjAiqoBoBIBIBoBIBoBIBoBoBoCiAQG85AFsAOQE2wJyYAkwJyYE5MCcmBNsCcmBOTAlNgalj4hHRqltjb9mdpT+2Vi3yWPm9rPIXaZ8jx941rcpdpeRYytK7LXaPdvemRzsjL9ZnWrfxXeI8IoquzykejY3uuyfX7/AMTbpOnRpn1DmRyn2v3mzS0PaOI+pxvNmtmXvna8DJ76tp/tb+7Wmj7TneOvn7S0faF+bHHn/Ls53SZypcJKBFVQCQDQCQCQDQCQDQDQDQFEA0AgNlsAtgTbADYAbAm2BOTAEmBOTAEmBOTAnJgSmwNSx8QN6UtsOb7MrTH7susvzjyxtOqWn6S7Vuf6zf8AdOJ+8tC/UfWZe7Z1zbc+7UfWTkbuLI0btQ9ZOV0cWR5/wizN64rrc91+pP8AEl55Ybk5ejiV2t8wpkZVyTPZtQcv/NG3S8tiOd6DwCm3rGAn6S7u9prcfbeOPP8Alr8TaZrqXpM7pM58uZCMCKqgGgEgEgGgEgGgGgGgGgGgKIBJAUbADYAbADYAbADYE2wA2BNsANgBsCcmBKbA1bOcDayntp977L9Pf2usyj4q+YeeT07+Ja92X6ztafL1rLm5Ob6yTpt48cuddmvtMJb+KumpfnqK3k/xZ43vWsblvY9uNk5MrZcp8EuEV2I07Wm87bcM1z25jOs6bFLa7LwuPat3vXI9L4v576xp/tLu72Hnxdt0jy8uJtur1Gf0jVlzYRgRVEA0AkA0AkA0A0AkA0BRANANANAYbADYBbADYAbAm2AGwA2AGwA2AGwBJgSmBqWPiBsahLbTMp9k8F/aqzKPir5hjaN0t4l5y/L9Z25lxqYXOuyDzmzbpjc7IzduEeL+pGnl4iI6V6y3MeH8WlKTk95Pdmr1md2bMREPtzLasqQ2ziTjMsWZxZ6jxbS31rT/AGlv3FhhltuI8pkncPY5/SMZacIQIqqAaASASAaASAaAaAaAaAogGgGgItgBsAtgBsANgBsANgFsANgBsAMANgSmBqWviBXVXtpWa+x4b+01lj4q+SO0+HhrspLnaOnfNWsdZatcUz8nPvyXPguC+tmjkz2v0jpDbpjiqB5x0ejO42PtxtX242rO4WHqPFk/z3p/tLfuZmF+yW7Pb5/SMpa6ESKogGgEgGgEgGgGgGgGgGgHECiAYGo2AGwC2AWwA2AWwA2AGwC2AGwCwAwJTA1LecBa15n1D5uN3msl+y07vzIxej5GVRko+A+A+CslV6jxY+fNP9pZ9zMwskvc5/SPSXg14mKqoBIBoBIBoBIBoBoBoBoCkQGgGgNBsAtgFsAtgBsAtgFsANgFgFgFgBgTmBp286AWs+aNR+Zjd6rJfstO78zMHo+LEj4yHwHwGSq+A9T4sfPmn+1n91Mxv2Je7z18Izl4NaJFUQDQCQDQCQDQDQDQDQDQDQFIgNActsDDYBbALYBbALYBbADYGGwCwCwCwJyQGpcuIH2sP80aj7PG71US/Zad35meb1fAZM4lHxR8BkK+Kr1Hiy8+adt6aX3czGyS97mv4RnLwa0SKogEgEgGgGgEgGgGgGgGgKIBxAaA5DYGGwC2AWwC2AWwMNgFsAgYYBYGGAWgI2V7gfPGjdXbj2Pk13wdcpbb8l7pxlt17SUX+oTG4InUvzzV9FycKfJvqcVvtC2PwqbF1OM+Z/8AJ5PZzwPhsZ3MuZH25dwMrfsJzQpQrnJ7RjJvm2UW2Xmge88XukTxbXqORF1zrrshiUy4Tds4uDtkuqMYyltvzvbsEdWNrad+2e7M5eTESKogGgEgEgGgGgEgGgGgKIBoBoBgcVsDDYGGwC2AWwMNgFgYYBAwBgDAGAPtgPkgL1ZU4LaM5RXYm9ioy9Qu9JL3k1C9WP4wu9JL3jUHV9/D7vSS95dQdX38Ot9JL3jUHVlZtn9OXvGoOrMsyyS2c5NLgk22kNQdUXMIwRTiA0A0AkA0AkA0A0A0A0A0A0BSIDQHCbAw2AWwMbgYbALAw2BgDABA+AwB8BgD4DIBaAxsB9sBnYDOwGUgM7AJIBJANANAJAJANAJANANANANAUQDQDQH/2Q==", // Updated image
+            description: "Tap to explore its hidden value",
+            components: [
+                { icon: "fa-battery-full", text: "Battery: Lithium-ion battery, recyclable but requires careful handling due to hazardous materials." },
+                { icon: "fa-mobile-alt", text: "Screen: Glass and LCD materials; often contains indium and other valuable rare earth elements." },
+                { icon: "fa-camera", text: "Camera Module: Contains small lenses and sensors; can be reused or components recovered." },
+                { icon: "fa-microchip", text: "Circuit Board (PCBs): Rich in precious metals like gold, silver, copper, and palladium." },
+                { icon: "fa-volume-up", text: "Speakers & Vibration Motor: Contain copper coils and magnets (neodymium)." },
+                { icon: "fa-memory", text: "Processor Chips: Silicon-based, but often have gold bonding wires and other valuable trace elements." }
+            ]
+        },
+        {
+            name: "Laptop",
+            image: "https://images.pexels.com/photos/205421/pexels-photo-205421.jpeg?auto=compress&cs=tinysrgb&w=600", // Updated image
+            description: "Uncover the powerful parts within",
+            components: [
+                { icon: "fa-hdd", text: "SSD/Hard Drive: Data storage, SSDs contain fewer hazardous materials than HDDs; both can be securely wiped and reused." },
+                { icon: "fa-memory", text: "RAM (Random Access Memory): Contains gold contacts and valuable metals." },
+                { icon: "fa-microchip", text: "Processor (CPU): High concentration of precious metals like gold." },
+                { icon: "fa-grip-horizontal", text: "Motherboard: Significant source of gold, copper, lead, and other valuable materials." },
+                { icon: "fa-laptop", text: "Screen: LCD/LED panels containing glass, plastics, and some rare earth elements." },
+                { icon: "fa-battery-full", text: "Battery: Lithium-ion battery packs, recyclable but dangerous if improperly handled." }
+            ]
+        },
+        {
+            name: "Tablet",
+            image: "data:image/jpeg;base64,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", // Updated image
+            description: "See what's inside this portable powerhouse",
+            components: [
+                { icon: "fa-battery-full", text: "Battery: Lithium-polymer, similar to smartphones; needs proper recycling." },
+                { icon: "fa-tablet-alt", text: "Screen: Large glass and LCD surface; potential for material recovery." },
+                { icon: "fa-microchip", text: "Main Logic Board: Contains gold, copper, and other precious metals in integrated circuits." },
+                { icon: "fa-sd-card", text: "Storage Chips: Flash memory chips (NAND) used for data storage." }
+            ]
+        },
+        {
+            name: "Smart Watch",
+            image: "data:image/jpeg;base64,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", // Updated image
+            description: "Small gadget, surprising components",
+            components: [
+                { icon: "fa-microchip", text: "Miniature Circuit Board: Dense with micro-components and precious metals." },
+                { icon: "fa-battery-full", text: "Battery: Small lithium-ion, often difficult to remove but recyclable." },
+                { icon: "fa-stopwatch", text: "Sensors: Accelerometers, heart rate sensors, etc., contain various elements." }
+            ]
+        },
+        {
+            name: "Camera",
+            image: "data:image/jpeg;base64,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", // Updated image
+            description: "Beyond the lens: valuable parts",
+            components: [
+                { icon: "fa-camera-retro", text: "Lens Elements: Glass and plastic, can often be reused." },
+                { icon: "fa-microchip", text: "Image Sensor: Contains silicon and often a small amount of gold." },
+                { icon: "fa-sd-card", text: "Memory Card Slot/Controller: Connectors with precious metals." },
+                { icon: "fa-battery-full", text: "Battery: Rechargeable lithium-ion packs." }
+            ]
+        },
+        {
+            name: "Headphones",
+            image: "https://images.pexels.com/photos/3587477/pexels-photo-3587477.jpeg?auto=compress&cs=tinysrgb&w=600",
+            description: "Sound value in every wire",
+            components: [
+                { icon: "fa-headphones", text: "Copper Wiring: Significant amount of copper in the cables and coils." },
+                { icon: "fa-magnet", text: "Magnets: Neodymium magnets found in drivers." },
+                { icon: "fa-microchip", text: "Circuitry (Wireless): Small PCBs with trace amounts of gold and other metals." }
+            ]
+        },
+        {
+            name: "Charger",
+            image: "data:image/jpeg;base64,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",
+            description: "Powering up recycling efforts",
+            components: [
+                { icon: "fa-plug", text: "Copper Wiring: Insulated copper wires are a primary component." },
+                { icon: "fa-microchip", text: "Small Circuit Board: Contains a small amount of copper and other base metals." },
+                { icon: "fa-transformer-bolt", text: "Transformer: Contains significant copper windings." }
+            ]
+        },
+        {
+            name: "Game Console",
+            image: "https://cdn.mos.cms.futurecdn.net/XyAaqBEtYtb8YffjKZ68Gb.jpg",
+            description: "Level up your recycling knowledge",
+            components: [
+                { icon: "fa-microchip", text: "CPU/GPU: High-value components with precious metals like gold, silver, and copper." },
+                { icon: "fa-hdd", text: "Hard Drive/SSD: Data storage that can be wiped and reused." },
+                { icon: "fa-fan", text: "Cooling Fan & Heatsinks: Copper and aluminum for thermal management." },
+                { icon: "fa-grip-horizontal", text: "Motherboard: Extensive network of precious and base metals." },
+                { icon: "fa-compact-disc", text: "Optical Drive (if applicable): Lenses and motors." }
+            ]
+        },
+        {
+            name: "Printer",
+            image: "data:image/jpeg;base64,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",
+            description: "Print new life for old parts",
+            components: [
+                { icon: "fa-cogs", text: "Motors & Gears: Contains various metals and plastics, often reusable." },
+                { icon: "fa-microchip", text: "Circuit Boards: Contain valuable metals." },
+                { icon: "fa-ethernet", text: "Wiring & Cables: Significant amounts of copper." },
+                { icon: "fa-tint", text: "Ink Cartridges: Can often be refilled or recycled through specialized programs." }
+            ]
+        },
+        {
+            name: "Router",
+            image: "https://images.pexels.com/photos/3370401/pexels-photo-3370401.jpeg?auto=compress&cs=tinysrgb&w=600",
+            description: "Connect to recycling opportunities",
+            components: [
+                { icon: "fa-wifi", text: "Antennas: Contain copper wire." },
+                { icon: "fa-microchip", text: "Circuit Board: Core component with various metals." },
+                { icon: "fa-ethernet", text: "Ports & Connectors: Small amounts of precious metals." }
+            ]
+        },
+        {
+            name: "Old TV (CRT/LED)",
+            image: "https://m.media-amazon.com/images/I/81pieXC63IL.jpg",
+            description: "Big screen, big recycling impact",
+            components: [
+                { icon: "fa-tv", text: "Glass (CRT): Lead glass in older models requires specialized recycling." },
+                { icon: "fa-microchip", text: "Circuit Boards: Larger boards with more metals than smaller devices." },
+                { icon: "fa-bolt", text: "Copper Yokes/Wiring: Significant copper content." },
+                { icon: "fa-lightbulb", text: "LED Backlights (LED TV): Contain small amounts of rare earth elements." }
+            ]
+        },
+        {
+            name: "Microwave",
+            image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQsQuVczUMI6T2WWvl3hoHauOy_MoWF0VtK2A&s",
+            description: "Heat up your recycling knowledge",
+            components: [
+                { icon: "fa-microwave", text: "Transformer: Large amount of copper." },
+                { icon: "fa-cogs", text: "Motor (Turntable): Contains copper windings." },
+                { icon: "fa-microchip", text: "Control Board: Small amounts of various metals." },
+                { icon: "fa-door-open", text: "Metal Casing: Steel or aluminum, highly recyclable." }
+            ]
+        },
+        {
+            name: "Power Bank",
+            image: "https://i5.walmartimages.com/seo/Wireless-Portable-Charger-20000mAh-Power-Bank-2-Outputs-1-Inputs-Huge-Capacity-Backup-Battery-LCD-Display-Compatible-Smart-Phones-Android-Phone-Table_b17c9db3-54fb-475a-80e4-1b84e23f67ca.8b4a0e3fcb1e628c838cdc49fe4cc450.jpeg",
+            description: "Portable power, hidden potential",
+            components: [
+                { icon: "fa-battery-full", text: "Lithium-ion Cells: The core of the power bank, requires proper recycling." },
+                { icon: "fa-microchip", text: "Control Circuitry: Small PCB for charging and discharging management." },
+                { icon: "fa-usb", text: "USB Ports: Connectors with trace metals." }
+            ]
+        }
+    ];
+
+    function renderDeviceTiles() {
+    if (!deviceGrid) return; // Ensure element exists
+    deviceGrid.innerHTML = '';
+    devicesData.forEach(device => {
+        const tile = document.createElement('div');
+        tile.className = "device-tile bg-white rounded-xl shadow-lg flex flex-col justify-between"; // Added styling for the tile itself
+        tile.innerHTML = `
+            <div>
+                <img src="${device.image}" alt="${device.name}" onerror="this.onerror=null;this.src='https://placehold.co/600x400/CCCCCC/000000?text=${encodeURIComponent(device.name)}';" class="w-full h-48 object-cover rounded-t-xl">
+                <div class="device-tile-content p-4">
+                    <h3 class="text-xl font-bold text-gray-800 mb-2">${device.name}</h3>
+                    <p class="text-gray-600 text-sm">${device.description}</p>
+                </div>
+            </div>
+            <div class="p-4 pt-0">
+                 <button class="view-components-btn w-full bg-eco-green text-white font-bold py-2 px-4 rounded-lg shadow-md border-b-6 border-green-700 hover:bg-eco-green-dark active:translate-y-1 active:border-b-6 transition-all duration-150" data-device-name="${device.name}">View Components</button>
+            </div>
+        `;
+        deviceGrid.appendChild(tile);
+    });
+
+
+
+        // Add event listeners to newly created buttons
+        document.querySelectorAll('.view-components-btn').forEach(button => {
+            button.addEventListener('click', (e) => {
+                const deviceName = e.target.dataset.deviceName;
+                openComponentModal(deviceName);
+            });
+        });
+    }
+
+    function openComponentModal(deviceName) {
+        const device = devicesData.find(d => d.name === deviceName);
+        if (device) {
+            modalDeviceTitle.textContent = device.name;
+            modalComponentList.innerHTML = ''; // Clear previous components
+            const ul = document.createElement('ul');
+            ul.className = 'component-list space-y-3 mt-4'; // Add Tailwind classes for spacing
+            device.components.forEach(component => {
+                const li = document.createElement('li');
+                li.innerHTML = `<i class="fas ${component.icon}"></i><span>${component.text}</span>`;
+                ul.appendChild(li);
+            });
+            modalComponentList.appendChild(ul); // Append the whole list
+            componentModal.style.display = 'flex'; // Show the modal
+        }
+    }
+
+    // Close component modal
+    if (modalCloseBtn) {
+        modalCloseBtn.addEventListener('click', () => {
+            componentModal.style.display = 'none';
+        });
+    }
+
+    // Close modal if clicked outside
+    if (componentModal) {
+        componentModal.addEventListener('click', (e) => {
+            if (e.target === componentModal) {
+                componentModal.style.display = 'none';
+            }
+        });
+    }
+
+    // Initial render of device tiles when the Scrap Your Junk page is loaded or on DOMContentLoaded
+    // Ensure this runs after the elements are in the DOM and the page navigation is ready
+    window.addEventListener('DOMContentLoaded', () => {
+        renderDeviceTiles();
+    });
 
 </script>
 
